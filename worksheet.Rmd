@@ -22,17 +22,24 @@ watermark <- function (x, y) {
 }
 ```
 
-# Intro
+## Intro
 
-```{r make-plot-iris}
-plot_iris <- iris %>% 
-  ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
-  geom_boxplot()
-```
+This interactive worksheet will walk you through a series of mini-challenges designed to demonstrate **some of the many aesthetic adjustments you can make to a `ggplot2` graph for readability and pizzazz.**
 
-Remember that constructing a whole plot in one call is roughly* equivalent to constructing the core of a plot, assigning it to a variable, and then adding another element to that variable. So these two chunks should produce identical plots:
+The exercises below heavily reference the [official ggplot2 textbook](https://ggplot2-book.org/index.html). The textbook is not a cookbook for producing any type of plot, but I recommend it to any R users looking to gain first-principles fluency with ggplot2's design philosophy and how its features are structured.
+
+Similarly, this worksheet does not demonstrate _every_ possible ggplot aesthetic modification (and you really can adjust nearly every feature of a plot with `ggplot2`!). The worksheet walks through common aesthetic changes I find myself using in my own plots, that I hope will apply to your plotting needs as well.
+
+The exercises below assume a general comfort with adjusting `ggplot2` code by adding new layers and changing the arguments specified within existing layers. 
+
+In particular, some exercises will provide a pre-coded base plot stored in a variable, and ask you to to add layers to the plot in that variable.
+
+Other exercises will ask you to adjust the base code for a plot in order to change its appearance. (If you see the full base code written out in an exercise chunk, that's your first hint that you will need to alter the code provided!)
+
+Remember that constructing a whole multi-layered ggplot in one call is roughly equivalent to constructing the base layers of that plot, assigning the plot to a variable, and then adding another element to that variable. So these two chunks should produce identical plots:
 
 ```{r, echo = TRUE}
+# Building the whole plot at once
 iris %>% 
   ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
   geom_boxplot() + 
@@ -40,18 +47,68 @@ iris %>%
 ```
 
 ```{r, echo = TRUE}
+# Building just the base layers, storing in variable
 plot_iris <- iris %>% 
   ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
   geom_boxplot()
 
+# Calling the base plot via variable, then adding layer(s)
 plot_iris + theme_bw()
 ```
 
-# Data-related aesthetics
+In this worksheet, you can assume the following:
+
+* When a base plot variable is provided in an exercise chunk, you _will not_ need to edit the base plot to complete that exercise. You will only need to add new layers
+* The code that creates base plots will always be displayed in a read-only chunk for your reference
+* When raw `ggplot2` code is provided in an exercise chunk, you _will_ need to edit the base plot to complete that exercise. You may _also_ need to add new layers, but not necessarily
 
 ## Modifying titles of plot elements
 
-ggplot2 textbook: [Section 8.1](https://ggplot2-book.org/annotations.html#titles)
+The default axis/legend title in `ggplot2` is the name of the variable displayed on that axis/legend. While you yourself will know what these variable names mean in your data, in any graph that you will ever show to another person, you will want to re-label axes/legends and add a title to make your plot more readable. `ggplot2` comes with an all-purpose function, `labs()`, that will allow you to edit the titles of pretty much any plot element (and figure captions).
+
+To illustrate this, we will look at the `iris` dataset collected by botanist Edgar Anderson (1935), which measures the flower dimensions of several exemplars of 3 iris species.
+
+Use the `labs()` function as demonstrated in [Section 8.1](https://ggplot2-book.org/annotations.html#titles) of the textbook to add the following titles shown below on the solution plot:
+
+* x-axis: "Iris species"
+* y-axis: "Petal length (cm)"
+* legend for fill color: "species"
+* plot title: "Iris petal length by species"
+* plot subtitle: "Three species"
+
+Hint: You only need to call `labs()` once to set all of these labels.
+
+```{r make-plot-iris, echo = TRUE}
+plot_iris <- iris %>% 
+  ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot()
+```
+
+```{r}
+plot_iris +
+  labs(x = "Iris species",
+       y = "Petal length (cm)",
+       fill = "species",
+       title = "Iris petal length by species",
+       subtitle = "Three species") +
+  watermark(2, 4)
+```
+
+```{r add-labs, exercise = TRUE}
+plot_iris
+```
+
+## Modifying axis labels of discrete variables
+
+Sometimes, in addition to editing axis titles, you will also want to edit the level labels of a discrete variable to improve readability. For example, if you have a binary gender variable coded as "F" and "M" plotted on one axis, you may want to have the plot say "Female" and "Male" instead.
+
+Use the function & argument demonstrated in [section 10.3.2](https://ggplot2-book.org/scale-position.html#scale-labels) of the textbook to change the labels of the iris species to their common names (per Wikipedia) instead of their taxonomic names:
+
+* Iris setosa -> "Bristle-pointed iris"
+* Iris virginica -> "Virginia iris"
+* Iris versicolor -> "Blue flag iris"
+
+Hint: In the example graph, the discrete labels are on the y-axis, but in this graph, the discrete labels are on the x-axis.
 
 ```{r make-plot-iris-labeled}
 plot_iris_labeled <- plot_iris +
@@ -64,36 +121,20 @@ plot_iris_labeled <- plot_iris +
 
 ```{r}
 plot_iris_labeled +
-  watermark(2, 4)
-```
-
-```{r add-labs, exercise = TRUE}
-plot_iris
-```
-
-## Modifying axis labels of discrete variables
-
-[Section 10.3.2](https://ggplot2-book.org/scale-position.html#scale-labels)
-
-```{r}
-plot_iris_labeled +
   scale_x_discrete(labels = c("setosa" = "Bristle-pointed iris",
                               "virginica" = "Virginia iris",
                               "versicolor" = "Blue flag iris"))
 ```
 
-```{r change-axis-label-text, exercise = TRUE,}
+```{r change-axis-label-text, exercise = TRUE, exercise.setup = "make-plot-iris-labeled"}
 plot_iris_labeled
 ```
-
 
 ## Modifying axis label aesthetics for readability
 
 When plotting a discrete variable along one axis (in these examples, the x-axis), it often makes sense to change the order of variable levels along that axis so that the order of variables along the axis adds meaning to the plot.
 
-For example, let's look at a different dataset now: the area (in square miles) of the 50 US states. This dataset helps illustrate the benefits of the next few techniques, in particular because it has a _lot_ of levels (50!) of a discrete variable.
-
-[vignette](https://forcats.tidyverse.org/articles/forcats.html) demonstrating how the forcats package can make plots more sensible.
+To illustrate this more clearly, let's look at a different dataset now: the area (in square miles) of the 50 US states. This dataset helps illustrate the benefits of the next few techniques, in particular because it has a _lot_ of levels (50!) of a discrete variable.
 
 ```{r make-us-states-by-area}
 us_states_by_area <- tibble(state = datasets::state.name,
@@ -114,7 +155,9 @@ plot_us_states_by_area <- us_states_by_area %>%
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   # the candy of the lollipop
   geom_point()
+```
 
+```{r}
 plot_us_states_by_area
 ```
 
@@ -162,7 +205,7 @@ plot_us_states_by_area +
 plot_us_states_by_area
 ```
 
-I personally prefer rotating axis labels over dodging them, but either might be the best choice depending on the plot. We'll use counterclockwise-rotated axis labels for the rest of the plots in this section.
+As you can see, for these data, dodging still doesn't fully stop the state names from plotting on top of one another. For this reason, I usually prefer rotating axis labels over dodging them, but either might be the best choice depending on the plot. We'll use counterclockwise-rotated axis labels for the rest of the plots in this section.
 
 ## Reordering levels
 
@@ -178,7 +221,7 @@ us_states_by_area %>%
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-Use the function demonstrated in the [forcats vignette section: Ordering by another variable](https://forcats.tidyverse.org/articles/forcats.html#ordering-by-another-variable-1) to reorder the states along the x-axis by area from smallest to largest.
+Use the function demonstrated in the [forcats package vignette: Ordering by another variable](https://forcats.tidyverse.org/articles/forcats.html#ordering-by-another-variable-1) to reorder the states along the x-axis by area from smallest to largest.
 
 ```{r}
 plot_us_states_by_area_angled_reordered <- us_states_by_area %>% 
@@ -253,8 +296,6 @@ us_states_by_area %>%
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
-
-# Theme (non-data) aesthetics
 
 ```{r make-plot-datasaurus}
 plot_datasaurus <- datasauRus::datasaurus_dozen_wide %>% 
