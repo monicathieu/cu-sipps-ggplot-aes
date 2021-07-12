@@ -1,0 +1,395 @@
+---
+title: "ggplot2 aesthetics worksheet"
+author: "Monica Thieu"
+date: "7/6/2021"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+require(tidyverse)
+require(learnr)
+tutorial_options(exercise.eval = TRUE)
+watermark <- function (x, y) {
+  annotate("text",
+           x = x, y = y,
+           label = "EXAMPLE!",
+           size = rel(10),
+           color = "firebrick",
+           angle = -45,
+           alpha = 0.8)
+}
+```
+
+# Intro
+
+```{r make-plot-iris}
+plot_iris <- iris %>% 
+  ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot()
+```
+
+Remember that constructing a whole plot in one call is roughly* equivalent to constructing the core of a plot, assigning it to a variable, and then adding another element to that variable. So these two chunks should produce identical plots:
+
+```{r, echo = TRUE}
+iris %>% 
+  ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot() + 
+  theme_bw()
+```
+
+```{r, echo = TRUE}
+plot_iris <- iris %>% 
+  ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot()
+
+plot_iris + theme_bw()
+```
+
+# Data-related aesthetics
+
+## Modifying titles of plot elements
+
+ggplot2 textbook: [Section 8.1](https://ggplot2-book.org/annotations.html#titles)
+
+```{r make-plot-iris-labeled}
+plot_iris_labeled <- plot_iris +
+  labs(x = "Iris species",
+       y = "Petal length (cm)",
+       fill = "species",
+       title = "Iris petal length by species",
+       subtitle = "Three species")
+```
+
+```{r}
+plot_iris_labeled +
+  watermark(2, 4)
+```
+
+```{r add-labs, exercise = TRUE}
+plot_iris
+```
+
+## Modifying axis labels of discrete variables
+
+[Section 10.3.2](https://ggplot2-book.org/scale-position.html#scale-labels)
+
+```{r}
+plot_iris_labeled +
+  scale_x_discrete(labels = c("setosa" = "Bristle-pointed iris",
+                              "virginica" = "Virginia iris",
+                              "versicolor" = "Blue flag iris"))
+```
+
+```{r change-axis-label-text, exercise = TRUE,}
+plot_iris_labeled
+```
+
+
+## Modifying axis label aesthetics for readability
+
+When plotting a discrete variable along one axis (in these examples, the x-axis), it often makes sense to change the order of variable levels along that axis so that the order of variables along the axis adds meaning to the plot.
+
+For example, let's look at a different dataset now: the area (in square miles) of the 50 US states. This dataset helps illustrate the benefits of the next few techniques, in particular because it has a _lot_ of levels (50!) of a discrete variable.
+
+[vignette](https://forcats.tidyverse.org/articles/forcats.html) demonstrating how the forcats package can make plots more sensible.
+
+```{r make-us-states-by-area}
+us_states_by_area <- tibble(state = datasets::state.name,
+                            abbrev = datasets::state.abb,
+                            area = datasets::state.area,
+                            region = datasets::state.region,
+                            division = datasets::state.division)
+```
+
+These next exercises demonstrate features you might use when plotting discrete data with a _lot_ of levels.
+
+If we plot a lollipop plot with state on the x-axis, and area on the y-axis, we can reap the benefits of both bar graphs and point graphs for this type of magnitude data.
+
+```{r make-plot-us-states-by-area}
+plot_us_states_by_area <- us_states_by_area %>% 
+  ggplot(aes(x = state, y = area)) + 
+  # the stick of the lollipop
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  # the candy of the lollipop
+  geom_point()
+
+plot_us_states_by_area
+```
+
+The state names along the x-axis are unreadable because they are written on top of each other! Next, we'll practice a few techniques for adjusting the axis labels for levels of a discrete variable that specifically mitigate overplotted labels like these.
+
+### Rotating axis labels
+
+```{r}
+plot_us_states_by_area_angled <- plot_us_states_by_area + 
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  watermark(25, 3e5)
+
+plot_us_states_by_area_angled
+```
+
+Rotate the axis labels for the state names by 45 degrees counter-clockwise.
+
+```{r axis-label-rotate-ccw, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
+plot_us_states_by_area
+```
+
+Now, rotate the axis labels for the state names by 45 degrees clockwise instead.
+
+```{r}
+plot_us_states_by_area +
+  scale_x_discrete(guide = guide_axis(angle = -45)) + 
+  watermark(25, 3e5)
+```
+
+```{r axis-label-rotate-cw, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
+plot_us_states_by_area
+```
+
+### Dodging axis labels
+
+Now "dodge" the axis labels so that every other state name appears slightly lower than the baseline.
+
+```{r}
+plot_us_states_by_area + 
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  watermark(25, 3e5)
+```
+
+```{r axis-label-dodge, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
+plot_us_states_by_area
+```
+
+I personally prefer rotating axis labels over dodging them, but either might be the best choice depending on the plot. We'll use counterclockwise-rotated axis labels for the rest of the plots in this section.
+
+## Reordering levels
+
+From our current plot, we can get information about smaller and larger states, but the order is not very sensible. To see the very largest states, a graph reader can go to the tallest lollipops and then look down to the axis label, but they have to jump around from lollipop to lollipop because the states are ordered alphabetically along the x-axis, not by area.
+
+```{r}
+us_states_by_area %>% 
+  ggplot(aes(x = state, y = area)) + 
+  # the stick of the lollipop
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  # the candy of the lollipop
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+Use the function demonstrated in the [forcats vignette section: Ordering by another variable](https://forcats.tidyverse.org/articles/forcats.html#ordering-by-another-variable-1) to reorder the states along the x-axis by area from smallest to largest.
+
+```{r}
+plot_us_states_by_area_angled_reordered <- us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  watermark(25, 3e5)
+
+plot_us_states_by_area_angled_reordered
+```
+
+```{r fct-reorder, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = state, y = area)) + 
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+Now flip it, so the states are ordered from largest to smallest instead.
+
+```{r}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area, .desc = TRUE), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  watermark(25, 3e5)
+```
+
+```{r fct-reorder-desc, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = state, y = area)) + 
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+## Changing colors of data elements
+
+### Applying pre-made color schemes
+
+```{r}
+plot_us_states_by_area_angled_reordered_colored <- us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = region)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  watermark(25, 3e5)
+
+plot_us_states_by_area_angled_reordered +
+  scale_color_brewer(type = "qual", palette = "Dark2")
+```
+
+```{r change-data-color-brewer, exercise = TRUE}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+### Applying custom color schemes
+
+```{r}
+
+```
+
+```{r change-data-color-manual, exercise = TRUE}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = region)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+# Theme (non-data) aesthetics
+
+```{r make-plot-datasaurus}
+plot_datasaurus <- datasauRus::datasaurus_dozen_wide %>% 
+  ggplot(aes(x = dino_x, y = dino_y)) +
+  geom_point() +
+  labs(title = "Rawr!",
+       subtitle = "Datasaurus says: always visualize your data.")
+```
+
+## Changing overarching theme
+
+[Section 18.1](https://ggplot2-book.org/polishing.html#themes)
+
+Add a theme command to render this plot in `ggplot2`'s dark-on-light theme.
+
+```{r}
+plot_datasaurus +
+  theme_bw() +
+  watermark(60, 50)
+```
+
+```{r theme-bw, echo = TRUE, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+Now, add a theme command to render this plot in `ggplot2`'s "minimal" theme.
+
+```{r}
+plot_datasaurus +
+  theme_minimal() +
+  watermark(60, 50)
+```
+
+```{r theme-minimal, echo = TRUE, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+Now, add a theme command to render this plot in `ggplot2`'s "classic" theme (designed to look like base R's default plots).
+
+```{r}
+plot_datasaurus +
+  theme_classic() +
+  watermark(60, 50)
+```
+
+```{r theme-classic, echo = TRUE, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+## Changing colors
+
+### Changing text color
+
+```{r}
+plot_datasaurus +
+  theme(text = element_text(color = "chartreuse4")) +
+  watermark(60, 50)
+```
+
+Change the color of all text elements on the plot to "chartreuse4".
+
+```{r change-text-color-all, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+Change the color of _just_ the plot title to "chartreuse4".
+
+```{r}
+plot_datasaurus +
+  theme(plot.title = element_text(color = "chartreuse4")) +
+  watermark(60, 50)
+```
+
+```{r change-text-color-title, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+### Changing grid line color
+
+Change the color of all grid lines on the plot to "deeppink".
+
+```{r}
+plot_datasaurus +
+  theme(panel.grid = element_line(color = "deeppink")) +
+  watermark(60, 50)
+```
+
+```{r change-grid-color-all, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+Now, change the color of the major (thicker) grid lines to "deeppink", and the minor (thinner) grid lines to "lightpink".
+
+```{r}
+plot_datasaurus +
+  theme(panel.grid.major = element_line(color = "deeppink"),
+        panel.grid.minor = element_line(color = "lightpink")) +
+  watermark(60, 50)
+```
+
+```{r change-grid-color-sep, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+### Changing inner plot background color
+
+```{r}
+plot_datasaurus +
+  theme(panel.background = element_rect(fill = "skyblue")) +
+  watermark(60, 50)
+```
+
+```{r change-bg-color-panel, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+### Changing full background color
+
+```{r}
+plot_datasaurus +
+  theme(plot.background = element_rect(fill = "skyblue")) +
+  watermark(60, 50)
+```
+
+```{r change-bg-color-plot, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+## Changing fonts
+
+```{r}
+plot_datasaurus +
+  theme(text = element_text(family = "Comic Sans MS"))
+```
+
+```{r change-font, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
