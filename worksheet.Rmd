@@ -28,9 +28,11 @@ This interactive worksheet will walk you through a series of mini-challenges des
 
 The exercises below heavily reference the [official ggplot2 textbook](https://ggplot2-book.org/index.html). The textbook is not a cookbook for producing any type of plot, but I recommend it to any R users looking to gain first-principles fluency with ggplot2's design philosophy and how its features are structured.
 
-Similarly, this worksheet does not demonstrate _every_ possible ggplot aesthetic modification (and you really can adjust nearly every feature of a plot with `ggplot2`!). The worksheet walks through common aesthetic changes I find myself using in my own plots, that I hope will apply to your plotting needs as well.
+Similarly, this worksheet does not demonstrate *every* possible ggplot aesthetic modification (and you really can adjust nearly every feature of a plot with `ggplot2`!). The worksheet walks through common aesthetic changes I find myself using in my own plots, that I hope will apply to your plotting needs as well.
 
-The exercises below assume a general comfort with adjusting `ggplot2` code by adding new layers and changing the arguments specified within existing layers. 
+------------------------------------------------------------------------
+
+The exercises below assume a general comfort with adjusting `ggplot2` code by adding new layers and changing the arguments specified within existing layers.
 
 In particular, some exercises will provide a pre-coded base plot stored in a variable, and ask you to to add layers to the plot in that variable.
 
@@ -58,9 +60,9 @@ plot_iris + theme_bw()
 
 In this worksheet, you can assume the following:
 
-* When a base plot variable is provided in an exercise chunk, you _will not_ need to edit the base plot to complete that exercise. You will only need to add new layers
-* The code that creates base plots will always be displayed in a read-only chunk for your reference
-* When raw `ggplot2` code is provided in an exercise chunk, you _will_ need to edit the base plot to complete that exercise. You may _also_ need to add new layers, but not necessarily
+-   When a base plot variable is provided in an exercise chunk, you *will not* need to edit the base plot to complete that exercise. You will only need to add new layers
+-   The code that creates base plots will always be displayed in a read-only chunk for your reference
+-   When raw `ggplot2` code is provided in an exercise chunk, you *will* need to edit the base plot to complete that exercise. You may *also* need to add new layers, but not necessarily
 
 ## Modifying titles of plot elements
 
@@ -70,11 +72,11 @@ To illustrate this, we will look at the `iris` dataset collected by botanist Edg
 
 Use the `labs()` function as demonstrated in [Section 8.1](https://ggplot2-book.org/annotations.html#titles) of the textbook to add the following titles shown below on the solution plot:
 
-* x-axis: "Iris species"
-* y-axis: "Petal length (cm)"
-* legend for fill color: "species"
-* plot title: "Iris petal length by species"
-* plot subtitle: "Three species"
+-   x-axis: "Iris species"
+-   y-axis: "Petal length (cm)"
+-   legend for fill color: "species"
+-   plot title: "Iris petal length by species"
+-   plot subtitle: "Three species"
 
 Hint: You only need to call `labs()` once to set all of these labels.
 
@@ -104,9 +106,9 @@ Sometimes, in addition to editing axis titles, you will also want to edit the le
 
 Use the function & argument demonstrated in [section 10.3.2](https://ggplot2-book.org/scale-position.html#scale-labels) of the textbook to change the labels of the iris species to their common names (per Wikipedia) instead of their taxonomic names:
 
-* Iris setosa -> "Bristle-pointed iris"
-* Iris virginica -> "Virginia iris"
-* Iris versicolor -> "Blue flag iris"
+-   Iris setosa -\> "Bristle-pointed iris"
+-   Iris virginica -\> "Virginia iris"
+-   Iris versicolor -\> "Blue flag iris"
 
 Hint: In the example graph, the discrete labels are on the y-axis, but in this graph, the discrete labels are on the x-axis.
 
@@ -130,11 +132,11 @@ plot_iris_labeled +
 plot_iris_labeled
 ```
 
-## Modifying axis label aesthetics for readability
+## Modifying axis label appearance for readability
 
 When plotting a discrete variable along one axis (in these examples, the x-axis), it often makes sense to change the order of variable levels along that axis so that the order of variables along the axis adds meaning to the plot.
 
-To illustrate this more clearly, let's look at a different dataset now: the area (in square miles) of the 50 US states. This dataset helps illustrate the benefits of the next few techniques, in particular because it has a _lot_ of levels (50!) of a discrete variable.
+To illustrate this more clearly, let's look at a different dataset now: the area (in square miles) of the 50 US states. This dataset helps illustrate the benefits of the next few techniques, in particular because it has a *lot* of levels (50!) of a discrete variable.
 
 ```{r make-us-states-by-area}
 us_states_by_area <- tibble(state = datasets::state.name,
@@ -144,9 +146,9 @@ us_states_by_area <- tibble(state = datasets::state.name,
                             division = datasets::state.division)
 ```
 
-These next exercises demonstrate features you might use when plotting discrete data with a _lot_ of levels.
+These next exercises demonstrate features you might use when plotting discrete data with many levels.
 
-If we plot a lollipop plot with state on the x-axis, and area on the y-axis, we can reap the benefits of both bar graphs and point graphs for this type of magnitude data.
+First, if we plot a lollipop plot with state on the x-axis, and area on the y-axis, we can reap the benefits of both bar graphs and point graphs for this type of magnitude data. (The lines help illustrate the magnitude of each state's area, like a bar graph, but the skinniness of the lines and the "lollipop" points on top of each line make it easier to compare the area of each state than it would be comparing wide bars on a bar graph.)
 
 ```{r make-plot-us-states-by-area}
 plot_us_states_by_area <- us_states_by_area %>% 
@@ -173,13 +175,13 @@ plot_us_states_by_area_angled <- plot_us_states_by_area +
 plot_us_states_by_area_angled
 ```
 
-Rotate the axis labels for the state names by 45 degrees counter-clockwise.
+Use one of the functions demonstrated in [section 10.3.3](https://ggplot2-book.org/scale-position.html#guide_axis) of the textbook to rotate the axis labels for the state names by 45 degrees counter-clockwise. (The labels should appear to be right-justified to the axis.) 
 
 ```{r axis-label-rotate-ccw, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
 plot_us_states_by_area
 ```
 
-Now, rotate the axis labels for the state names by 45 degrees clockwise instead.
+Now, use the same function to rotate the axis labels for the state names by 45 degrees clockwise instead. (The labels should appear to be left-justified to the axis.) 
 
 ```{r}
 plot_us_states_by_area +
@@ -193,11 +195,11 @@ plot_us_states_by_area
 
 ### Dodging axis labels
 
-Now "dodge" the axis labels so that every other state name appears slightly lower than the baseline.
+Now, use another function demonstrated in section "dodge" the axis labels by a factor of 5 so that state name labels are jittered into 5 rows.
 
 ```{r}
 plot_us_states_by_area + 
-  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 5)) +
   watermark(25, 3e5)
 ```
 
@@ -205,9 +207,9 @@ plot_us_states_by_area +
 plot_us_states_by_area
 ```
 
-As you can see, for these data, dodging still doesn't fully stop the state names from plotting on top of one another. For this reason, I usually prefer rotating axis labels over dodging them, but either might be the best choice depending on the plot. We'll use counterclockwise-rotated axis labels for the rest of the plots in this section.
+As you can see, for these data, dodging into as many as 5 rows still doesn't fully stop the state names from plotting on top of one another, and it's hard to tell which lollipops the labels in the lower rows are referring to. For this reason, I usually prefer rotating axis labels over dodging them, but either might be the best choice depending on the plot. We'll use counterclockwise-rotated axis labels for the rest of the plots in this section.
 
-## Reordering levels
+## Reordering levels of a discrete variable
 
 From our current plot, we can get information about smaller and larger states, but the order is not very sensible. To see the very largest states, a graph reader can go to the tallest lollipops and then look down to the axis label, but they have to jump around from lollipop to lollipop because the states are ordered alphabetically along the x-axis, not by area.
 
@@ -224,14 +226,12 @@ us_states_by_area %>%
 Use the function demonstrated in the [forcats package vignette: Ordering by another variable](https://forcats.tidyverse.org/articles/forcats.html#ordering-by-another-variable-1) to reorder the states along the x-axis by area from smallest to largest.
 
 ```{r}
-plot_us_states_by_area_angled_reordered <- us_states_by_area %>% 
+us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
   watermark(25, 3e5)
-
-plot_us_states_by_area_angled_reordered
 ```
 
 ```{r fct-reorder, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
@@ -241,7 +241,7 @@ us_states_by_area %>%
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-Now flip it, so the states are ordered from largest to smallest instead.
+Now, refer to the function's [docs](https://forcats.tidyverse.org/reference/fct_reorder.html) and use another argument to flip the reordering, so the states are ordered from largest to smallest instead.
 
 ```{r}
 us_states_by_area %>% 
@@ -258,6 +258,128 @@ us_states_by_area %>%
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
+
+Bonus exercise: Since the x-axis label looks pretty gnarly now because of the code used to reorder states along the x-axis by their area, and we should re-label axes and title our plot anyway, use `labs()` to relabel the plot of US states by area to match the solution plot below.
+
+```{r make-plot-us-states-ang-reo, echo = TRUE}
+plot_us_states_by_area_angled_reordered <- us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+```{r}
+plot_us_states_by_area_angled_reordered
+```
+
+```{r}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area, .desc = TRUE), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  watermark(25, 3e5) +
+  labs(x = "US state",
+       y = "Area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r labs-fct-reorder-desc, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo"}
+plot_us_states_by_area_angled_reordered
+```
+
+## Adjusting continuous axis limits
+
+Since the last few exercises demonstrated aesthetic adjustments you might make to discrete variables, next we'll look at some adjustments you might make on continuous variables.
+
+For these, we'll pivot back to the iris flower size data from the beginning of the worksheet. We'll now turn to adjusting aesthetics along the y-axis, representing the continuous variable of iris petal length in centimeters.
+
+```{r}
+plot_iris_labeled_commonname <- plot_iris_labeled +
+  scale_x_discrete(labels = c("setosa" = "Bristle-pointed iris",
+                              "virginica" = "Virginia iris",
+                              "versicolor" = "Blue flag iris"))
+```
+
+```{r}
+plot_iris_labeled_commonname
+```
+
+### Expanding axis limits to include a certain value
+
+`ggplot2`, like most plotting software, automatically sets the axis limits of a graph based on the range of the data. However, careful plotters know that axis limits must be selected carefully as to faithfully represent the effect sizes present in the data!
+
+One common axis limit change you might make is to expand limits to include 0. If you have a variable for which 0 carries meaning, it can be helpful to see where 0 is relative to your data.
+
+Referring to the function [docs](https://ggplot2.tidyverse.org/reference/expand_limits.html), use the `ggplot2` function `expand_limits()` to show 0 on the y-axis.
+
+```{r}
+plot_iris_labeled_commonname +
+  expand_limits(y = 0) +
+  watermark(2, 3.5)
+```
+
+```{r expand-limits, exercise = TRUE}
+plot_iris_labeled_commonname
+```
+
+One big benefit of `expand_limits()` is that you don't need to know anything about the actual range of your data. You just have to tell the function what value you want to include on the axis, and your ggplot will show that number as well as the rest of your data.
+
+### Changing axis limits to preset bounds
+
+Sometimes, you may want to change your axes to "zoom" your plot to a specific range of values. You may want to zoom in (to stop showing outliers), or to zoom out to meaningful start and end bounds.
+
+Referring to [section 10.1.2](https://ggplot2-book.org/scale-position.html#oob) of the textbook, use the "zooming" limit adjustment function (NOT the one that will trim data if they fall outside of the limits!) to change the y-axis bounds to 0 on the lower end and 8 on the higher end.
+
+```{r}
+plot_iris_labeled_commonname +
+  coord_cartesian(ylim = c(0, 8)) +
+  watermark(2, 3.5)
+```
+
+```{r coord-cartesian-limits, exercise = TRUE}
+plot_iris_labeled_commonname
+```
+
+## Scaling continuous axes
+
+Sometimes, you don't want to edit the bounds of a continuous axis, but you do need to change its scaling.
+
+To illustrate this use case more clearly, we'll step away to a different dataset: the vital characteristics of key Star Wars characters from the 9 movies in the Skywalker saga. Here, we'll focus on plotting a histogram of characters' masses in kilograms (yes, apparently they use the metric system in a galaxy far, far away).
+
+```{r make-plot-starwars-mass}
+plot_starwars_mass <- starwars %>% 
+  filter(!is.na(mass)) %>% 
+  ggplot(aes(x = mass)) +
+  geom_histogram(bins = 30) +
+  labs(x = "Character mass (kg)",
+       y = "Number of characters",
+       title = "Histogram of Star Wars characters' masses",
+       subtitle = "Episodes I-IX")
+```
+
+```{r}
+plot_starwars_mass
+```
+
+Jabba the Hutt is far and away the heaviest character (all that organized crime pays for a very luxurious diet), which is pushing all of the lighter characters into just a few histogram bins.
+
+To address this, use one of the convenience functions demonstrated in [section 10.1.9](https://ggplot2-book.org/scale-position.html#scale-transformation) of the textbook to show x-axis tick labels on the log-10 scale.
+
+```{r}
+plot_starwars_mass +
+  scale_x_log10() +
+  watermark(150, 10)
+```
+
+```{r scale-x-log10, exercise = TRUE, exercise.setup = "make-plot-starwars-mass"}
+plot_starwars_mass
+```
+
+## Altering continuous axis breaks 
+
+This histogram of Star Wars' characters' masses is also useful to illustrate situations where you might want to change the values at which grid lines appear along a continuous axis. I might do this if a histogram has short enough bins that 
 
 ## Changing colors of data elements
 
@@ -304,6 +426,8 @@ plot_datasaurus <- datasauRus::datasaurus_dozen_wide %>%
   labs(title = "Rawr!",
        subtitle = "Datasaurus says: always visualize your data.")
 ```
+
+### Adjusting heatmap-like colors
 
 ## Changing overarching theme
 
@@ -361,7 +485,7 @@ Change the color of all text elements on the plot to "chartreuse4".
 plot_datasaurus
 ```
 
-Change the color of _just_ the plot title to "chartreuse4".
+Change the color of *just* the plot title to "chartreuse4".
 
 ```{r}
 plot_datasaurus +
