@@ -379,7 +379,20 @@ plot_starwars_mass
 
 ## Altering continuous axis breaks 
 
-This histogram of Star Wars' characters' masses is also useful to illustrate situations where you might want to change the values at which grid lines appear along a continuous axis. I might do this if a histogram has short enough bins that 
+This histogram of Star Wars' characters' masses is also useful to illustrate situations where you might want to change the values at which grid lines appear along a continuous axis. I might do this if a histogram has short enough bins that some of the default y-axis grid lines occur at fractional values. Fractional grid lines aren't useful for count variables (you can't have 0.5 of an observation), so it's handy to adjust grid lines in that case.
+
+```{r}
+starwars %>% 
+  ggplot(aes(x = fct_rev(fct_infreq(species)))) +
+  geom_bar() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "Character mass (kg)",
+       y = "Number of characters",
+       title = "Histogram of Star Wars characters' masses",
+       subtitle = "Episodes I-IX")
+```
+
+ 
 
 ## Changing colors of data elements
 
