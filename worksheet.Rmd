@@ -381,18 +381,61 @@ plot_starwars_mass
 
 This histogram of Star Wars' characters' masses is also useful to illustrate situations where you might want to change the values at which grid lines appear along a continuous axis. I might do this if a histogram has short enough bins that some of the default y-axis grid lines occur at fractional values. Fractional grid lines aren't useful for count variables (you can't have 0.5 of an observation), so it's handy to adjust grid lines in that case.
 
-```{r}
-starwars %>% 
-  ggplot(aes(x = fct_rev(fct_infreq(species)))) +
-  geom_bar() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  labs(x = "Character mass (kg)",
-       y = "Number of characters",
-       title = "Histogram of Star Wars characters' masses",
-       subtitle = "Episodes I-IX")
+For example, along the y-axis of the histogram of Star Wars' characters' masses, the minor (non-numbered) y-axis grid lines appear to occur between the 5s and the 0s. There will never be 2.5 people in any of the bins, so we'll try a few different strategies to change where the grid lines hit so they only hit round numbers.
+
+### Set axis break width
+
+First, use `scales::breaks_width()` to set the major breaks to occur on the 10s, as shown in [section 10.1.5](https://ggplot2-book.org/scale-position.html#break-functions) of the textbook.
+
+```{r make-plot-starwars-mass-log10, echo = TRUE}
+plot_starwars_mass_log10 <- plot_starwars_mass +
+  scale_x_log10()
 ```
 
- 
+```{r}
+plot_starwars_mass +
+  scale_x_log10() +
+  scale_y_continuous(breaks = scales::breaks_width(10)) +
+  watermark(150, 10)
+```
+
+```{r breaks-width, exercise = TRUE, exercise.setup = "make-plot-starwars-mass-log10"}
+plot_starwars_mass_log10
+```
+
+### Set number of major breaks
+
+Next, use `scales::breaks_extended()` to redraw the y-axis grid lines with 12 major grid lines, as demonstrated in the same textbook section as the previous exercise.
+
+```{r}
+plot_starwars_mass +
+  scale_x_log10() +
+  scale_y_continuous(breaks = scales::breaks_extended(n = 12)) +
+  watermark(150, 10)
+```
+
+```{r breaks-n, exercise = TRUE, exercise.setup = "make-plot-starwars-mass-log10"}
+plot_starwars_mass_log10
+```
+
+### Manually set break values
+
+Next, use `seq()` (NOT a `ggplot2` smart-breaks function!) to create a vector stepping from 0 to 20 in steps of 4 to manually draw the y-axis major breaks at 0, 4, 8 ... 20.
+
+Hint: This will be a little different than the previous two, but if you had to guess how the code would look, try that!
+
+Hint 2: You will need to manually assign the vector to the `breaks` argument of `scale_y_continuous`.
+
+```{r}
+plot_starwars_mass +
+  scale_x_log10() +
+  scale_y_continuous(breaks = seq(0, 20, 4)) +
+  watermark(150, 10)
+```
+
+```{r breaks-manual, exercise = TRUE, exercise.setup = "make-plot-starwars-mass-log10"}
+plot_starwars_mass_log10
+```
 
 ## Changing colors of data elements
 
@@ -482,17 +525,23 @@ plot_datasaurus +
 plot_datasaurus
 ```
 
-## Changing colors
+## Modifying text aesthetics
+
+From this section to the end, we will be adjusting the appearance of various theme elements. This includes the color, size, thickness, transparency, and basically every other non-data feature of a plot.
+
+This section will demonstrate changing some theme elements, but is not an exhaustive example of every modifiable theme element. For that, refer to [section 18.4](https://ggplot2-book.org/polishing.html#theme-elements) of the textbook.
 
 ### Changing text color
+
+First, we'll practice changing the color of text labels on the plot.
+
+Change the color of all text elements on the plot to "chartreuse4".
 
 ```{r}
 plot_datasaurus +
   theme(text = element_text(color = "chartreuse4")) +
   watermark(60, 50)
 ```
-
-Change the color of all text elements on the plot to "chartreuse4".
 
 ```{r change-text-color-all, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
@@ -509,6 +558,46 @@ plot_datasaurus +
 ```{r change-text-color-title, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
+
+### Changing fonts
+
+Change all the text on the plot to use the font Comic Sans MS.
+
+```{r}
+plot_datasaurus +
+  theme(text = element_text(family = "Comic Sans MS"))
+```
+
+```{r change-font, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+Again, change all the text to Comic Sans MS font, _and_ change the plot's subtitle to appear in bold font face.
+
+```{r}
+plot_datasaurus +
+  theme(text = element_text(family = "Comic Sans MS"),
+        plot.subtitle = element_text(face = "bold"))
+```
+
+```{r change-font-bold, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+### Changing text size
+
+Use `rel()` to make the axis tick labels (on both axes) appear 2x as big as its usual "parent" size.
+
+```{r}
+plot_datasaurus +
+  theme(axis.text = element_text(size = rel(2)))
+```
+
+```{r change-text-size, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+## Modifying grid line aesthetics
 
 ### Changing grid line color
 
@@ -537,7 +626,11 @@ plot_datasaurus +
 plot_datasaurus
 ```
 
+## Modifying background (rectangle) aesthetics
+
 ### Changing inner plot background color
+
+Change the background of the plot panel (the square with the data in it, not the background where the title/axis labels are printed) to the fill color "skyblue".
 
 ```{r}
 plot_datasaurus +
@@ -551,6 +644,8 @@ plot_datasaurus
 
 ### Changing full background color
 
+Now, change the background of the entire plot (the background where the title/axis labels are printed) to the fill color "skyblue".
+
 ```{r}
 plot_datasaurus +
   theme(plot.background = element_rect(fill = "skyblue")) +
@@ -561,13 +656,16 @@ plot_datasaurus +
 plot_datasaurus
 ```
 
-## Changing fonts
+### Modifying panel border
+
+Change the the border of the panel background (the panel containing the data) to the color "navyblue".
 
 ```{r}
 plot_datasaurus +
-  theme(text = element_text(family = "Comic Sans MS"))
+  theme(panel.background = element_rect(color = "navyblue", size = rel(2))) +
+  watermark(60, 50)
 ```
 
-```{r change-font, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+```{r change-plot-border-color, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
