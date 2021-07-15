@@ -64,6 +64,8 @@ In this worksheet, you can assume the following:
 -   The code that creates base plots will always be displayed in a read-only chunk for your reference
 -   When raw `ggplot2` code is provided in an exercise chunk, you *will* need to edit the base plot to complete that exercise. You may *also* need to add new layers, but not necessarily
 
+Finally, remember that because of `ggplot2`'s modular, layered structure, almost all of the aesthetic changes demonstrated in this worksheet can be mixed and matched with each other in a single plot to customize as much as you would like. These exercises mostly show the adjustments one at a time for simplicity, but you can (and should) combine them in your own plots!
+
 ## Modifying titles of plot elements
 
 The default axis/legend title in `ggplot2` is the name of the variable displayed on that axis/legend. While you yourself will know what these variable names mean in your data, in any graph that you will ever show to another person, you will want to re-label axes/legends and add a title to make your plot more readable. `ggplot2` comes with an all-purpose function, `labs()`, that will allow you to edit the titles of pretty much any plot element (and figure captions).
@@ -146,9 +148,7 @@ us_states_by_area <- tibble(state = datasets::state.name,
                             division = datasets::state.division)
 ```
 
-These next exercises demonstrate features you might use when plotting discrete data with many levels.
-
-First, if we plot a lollipop plot with state on the x-axis, and area on the y-axis, we can reap the benefits of both bar graphs and point graphs for this type of magnitude data. (The lines help illustrate the magnitude of each state's area, like a bar graph, but the skinniness of the lines and the "lollipop" points on top of each line make it easier to compare the area of each state than it would be comparing wide bars on a bar graph.)
+First, we'll plot a lollipop plot with state on the x-axis, and area on the y-axis. With this plot style, we can reap the benefits of both bar graphs and point graphs for visualizing magnitude data like state areas. (The lines help illustrate the magnitude of each state's area, like a bar graph, but the skinniness of the lines and the "lollipop" points on top of each line make it easier to compare the area of each state than it would be comparing wide bars on a bar graph.)
 
 ```{r make-plot-us-states-by-area}
 plot_us_states_by_area <- us_states_by_area %>% 
@@ -167,6 +167,8 @@ The state names along the x-axis are unreadable because they are written on top 
 
 ### Rotating axis labels
 
+Use one of the functions demonstrated in [section 10.3.3](https://ggplot2-book.org/scale-position.html#guide_axis) of the textbook to rotate the axis labels for the state names by 45 degrees counter-clockwise. (The labels should appear to be right-justified to the axis.) 
+
 ```{r}
 plot_us_states_by_area_angled <- plot_us_states_by_area + 
   scale_x_discrete(guide = guide_axis(angle = 45)) +
@@ -174,8 +176,6 @@ plot_us_states_by_area_angled <- plot_us_states_by_area +
 
 plot_us_states_by_area_angled
 ```
-
-Use one of the functions demonstrated in [section 10.3.3](https://ggplot2-book.org/scale-position.html#guide_axis) of the textbook to rotate the axis labels for the state names by 45 degrees counter-clockwise. (The labels should appear to be right-justified to the axis.) 
 
 ```{r axis-label-rotate-ccw, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
 plot_us_states_by_area
@@ -220,7 +220,8 @@ us_states_by_area %>%
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   # the candy of the lollipop
   geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45))
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(title = "Could be a bit easier to follow...")
 ```
 
 Use the function demonstrated in the [forcats package vignette: Ordering by another variable](https://forcats.tidyverse.org/articles/forcats.html#ordering-by-another-variable-1) to reorder the states along the x-axis by area from smallest to largest.
@@ -237,6 +238,7 @@ us_states_by_area %>%
 ```{r fct-reorder, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
 us_states_by_area %>% 
   ggplot(aes(x = state, y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
@@ -255,6 +257,7 @@ us_states_by_area %>%
 ```{r fct-reorder-desc, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
 us_states_by_area %>% 
   ggplot(aes(x = state, y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
@@ -293,9 +296,9 @@ plot_us_states_by_area_angled_reordered
 
 Since the last few exercises demonstrated aesthetic adjustments you might make to discrete variables, next we'll look at some adjustments you might make on continuous variables.
 
-For these, we'll pivot back to the iris flower size data from the beginning of the worksheet. We'll now turn to adjusting aesthetics along the y-axis, representing the continuous variable of iris petal length in centimeters.
+Right now, we'll pivot back to the iris flower size plot from the beginning of the worksheet. We'll now turn to adjusting aesthetics along the y-axis, representing the continuous variable of iris petal length in centimeters.
 
-```{r}
+```{r make-plot-iris-lab-common, echo = TRUE}
 plot_iris_labeled_commonname <- plot_iris_labeled +
   scale_x_discrete(labels = c("setosa" = "Bristle-pointed iris",
                               "virginica" = "Virginia iris",
@@ -320,7 +323,7 @@ plot_iris_labeled_commonname +
   watermark(2, 3.5)
 ```
 
-```{r expand-limits, exercise = TRUE}
+```{r expand-limits, exercise = TRUE, exercise.setup = "make-plot-iris-lab-common"}
 plot_iris_labeled_commonname
 ```
 
@@ -376,6 +379,8 @@ plot_starwars_mass +
 ```{r scale-x-log10, exercise = TRUE, exercise.setup = "make-plot-starwars-mass"}
 plot_starwars_mass
 ```
+
+I like this method of axis scaling when possible because it shows the axis ticks at log-distance from each other, but still has the axis tick labels in real units, not log-transformed units.
 
 ## Altering continuous axis breaks 
 
@@ -439,40 +444,171 @@ plot_starwars_mass_log10
 
 ## Changing colors of data elements
 
+In this section, we'll practice modifying the color schemes used to plot data information by color. While the default R data color schemes do the job decently well for quick exploratory graphs, changing the color scheme allows you to personalize your plots almost instantly.
+
 ### Applying pre-made color schemes
 
+R comes with some built-in alternative color scheme functions for you to apply pre-made color schemes carefully designed to help viewers spot patterns in data.
+
+For discrete (ordered or non-ordered) data, R has palettes from [ColorBrewer](https://colorbrewer2.org/), a palette set designed for plotting discrete colors onto maps.
+
+In the exercise below, modify the base plotting call so that lollipop color (both the line-segment sticks and the point candies) varies with the discrete variable `region` in the data, and set the color scheme to use ColorBrewer with palette "Dark2". (Note that this palette is appropriate for un-ordered categorical variables like the `region` variable here.)
+
+Refer to [section 11.3.1](https://ggplot2-book.org/scale-colour.html#brewer-scales) of the textbook.
+
 ```{r}
-plot_us_states_by_area_angled_reordered_colored <- us_states_by_area %>% 
+us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area, color = region)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge") +
   watermark(25, 3e5)
-
-plot_us_states_by_area_angled_reordered +
-  scale_color_brewer(type = "qual", palette = "Dark2")
 ```
 
-```{r change-data-color-brewer, exercise = TRUE}
+```{r change-data-color-brewer, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
 us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45))
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge")
+```
+
+Next, we will try out another pre-made color scheme, this time for continuous data. The [viridis](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html) color map set was originally made for Python's matplotlib package, but has since been ported to R as well. The viridis color maps were designed to show continuously varying data in an attractive, colorblind-safe, and perceptually uniform way.
+
+In the exercise below, modify the base plotting call so that lollipop color varies with `area` in the data (yes, area is also plotted on other axes, so when done correctly, the lollipops should get lighter from left to right because color will be confounded with x-axis position and lollipop height). Additionally, set the color scheme to use viridis (for continuous data) with palette option "inferno".
+
+Refer to [section 11.2.1](https://ggplot2-book.org/scale-colour.html#particular-palettes) of the textbook.
+
+Hint: There are a couple versions of the viridis color scale functions in `ggplot2`. Be sure to use the one for _continuous_ data.
+
+```{r}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_viridis_c(option = "inferno") +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge") +
+  watermark(25, 3e5)
+```
+
+```{r change-data-color-viridis, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge")
 ```
 
 ### Applying custom color schemes
 
-```{r}
+If you want to fully customize your plot colors, you may choose to select your own color scheme. You can do this too! Bear in mind that colors you select may not have the same perceptual properties as pre-made color schemes, but if your colors have some significance (matching the colors of your institution, for example) they should still look nice.
 
+`ggplot2` understands a series of pre-specified named colors, shown [here](http://sape.inf.usi.ch/quick-reference/ggplot2/colour), or hex color codes.
+
+First, you can wholesale change the color of data elements, even when color isn't mapped to a variable. The default color of lines and points on a graph is black, but can be set to any single color you please.
+
+In the exercise below, set the line segments to the constant hex color "#825324", and set the points to the constant named color "forestgreen". The lollipops should look like very skinny trees.
+
+Refer to [sections 14.4.1 and 14.4.2](https://ggplot2-book.org/layers.html#plots-and-layers) of the textbook for help with this, especially in differentiating where in the functions the color argument should be specified to have the desired behavior.
+
+```{r}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area), color = "#825324") +
+  geom_point(color = "forestgreen") +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge") +
+  watermark(25, 3e5)
 ```
 
-```{r change-data-color-manual, exercise = TRUE}
+```{r change-data-color-manual-constant, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge")
+```
+
+Next, we'll go back to customizing the color scales used for differentiating data by color. In the exercise below, use `scale_color_manual()` to specify a custom discrete color scale for the `region` variable with the following regions mapped to the following colors:
+
+* Northeast: "firebrick"
+* South: "navyblue"
+* North Central (I think this refers to the Midwest actually): "lightpink"
+* West: "skyblue"
+
+Refer to [section 11.3.3](https://ggplot2-book.org/scale-colour.html#manual-scales) of the textbook.
+
+```{r}
 us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area, color = region)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45))
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_manual(values = c("Northeast" = "firebrick",
+                                "South" = "navyblue",
+                                "North Central" = "lightpink",
+                                "West" = "skyblue")) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge") +
+  watermark(25, 3e5)
+```
+
+```{r change-data-color-manual-discrete, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge")
+```
+
+In the exercise below, use `scale_color_gradient()` to set `area` to vary with a custom unidirectional color gradient going from "#000000" on the low end to "#ff3dab" on the high end.
+
+Refer to [section 11.2.2](https://ggplot2-book.org/scale-colour.html#robust-recipes) of the textbook. You may need to scroll down a little bit for examples.
+
+```{r}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_gradient(low = "#000000", high = "#ff3dab") +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge") +
+  watermark(25, 3e5)
+```
+
+```{r change-data-color-manual-cont, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge")
 ```
 
 ```{r make-plot-datasaurus}
@@ -483,9 +619,60 @@ plot_datasaurus <- datasauRus::datasaurus_dozen_wide %>%
        subtitle = "Datasaurus says: always visualize your data.")
 ```
 
-### Adjusting heatmap-like colors
+### Rescaling continuous color variables
+
+When color is mapped to a continuous variable, by default, the lowest color on the palette is assigned to the minimum of the variable, and the highest color on the palette is assigned to the maximum. If data are relatively evenly distributed between the min and the max, this looks reasonable. However, if the data are super skewed, this can skew the visible range of the color scale so that the outlier values look very different in color, and all the other values look like the same color.
+
+We can see this happening in our plot of US states by area, because Alaska is _so_ big that it's pushing the top of the color scale up, causing all the other states to look like they fall at the bottom of the color scale.
+
+```{r}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_viridis_c(option = "inferno") +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge") +
+  watermark(25, 3e5)
+```
+
+By setting some arguments in `scale_color_viridis_c()` (or whatever continuous color scale function is being applied), we can manually set bounds on the color scale, and tell `ggplot2` to plot any values outside the bounds at the min or max color respectively. This behavior is called "squishing" the color scale.
+
+In the exercise below, add arguments at the beginning of `scale_color_viridis_c()` to set the color scale min to 0, the max to 200,000 (a bit smaller than Texas--this will set the biggest 2 states to be "squished" to the max color), and the out-of-bounds behavior to `scales::squish` to actually squish the values, as opposed to graying out the two biggest states. 
+
+Refer to [section 10.1.2](https://ggplot2-book.org/scale-position.html?q=oob#oob) of the textbook for an example, although this section isn't strictly dedicated to handling skewed color scales.
+
+```{r}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_viridis_c(limits = c(0, 2e5), oob = scales::squish, option = "inferno") +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge") +
+  watermark(25, 3e5)
+```
+
+```{r data-color-squish, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really huge")
+```
+
+In my field of cognitive neuroscience, I use this functionality when plotting statistics on brain images, if one brain region's value is so high that it's skewing the color scale for the rest of the regions. You might find it useful in another context, but it's good to know how to do!
 
 ## Changing overarching theme
+
+In this last set of exercises, we'll 
 
 [Section 18.1](https://ggplot2-book.org/polishing.html#themes)
 
