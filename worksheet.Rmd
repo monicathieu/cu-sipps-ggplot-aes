@@ -10,6 +10,7 @@ runtime: shiny_prerendered
 knitr::opts_chunk$set(echo = FALSE)
 require(tidyverse)
 require(learnr)
+require(gradethis)
 tutorial_options(exercise.eval = TRUE)
 watermark <- function (x, y) {
   annotate("text",
@@ -102,6 +103,20 @@ plot_iris +
 plot_iris
 ```
 
+```{r add-labs-solution}
+plot_iris +
+  labs(x = "Iris species",
+       y = "Petal length (cm)",
+       fill = "species",
+       title = "Iris petal length by species",
+       subtitle = "Three species")
+```
+
+```{r add-labs-check}
+grade_this_code()
+```
+
+
 ## Modifying axis labels of discrete variables
 
 Sometimes, in addition to editing axis titles, you will also want to edit the level labels of a discrete variable to improve readability. For example, if you have a binary gender variable coded as "F" and "M" plotted on one axis, you may want to have the plot say "Female" and "Male" instead.
@@ -127,12 +142,25 @@ plot_iris_labeled <- plot_iris +
 plot_iris_labeled +
   scale_x_discrete(labels = c("setosa" = "Bristle-pointed iris",
                               "virginica" = "Virginia iris",
-                              "versicolor" = "Blue flag iris"))
+                              "versicolor" = "Blue flag iris")) +
+  watermark(2, 4)
 ```
 
 ```{r change-axis-label-text, exercise = TRUE, exercise.setup = "make-plot-iris-labeled"}
 plot_iris_labeled
 ```
+
+```{r change-axis-label-text-solution}
+plot_iris_labeled +
+  scale_x_discrete(labels = c("setosa" = "Bristle-pointed iris",
+                              "virginica" = "Virginia iris",
+                              "versicolor" = "Blue flag iris"))
+```
+
+```{r change-axis-label-text-check}
+grade_this_code()
+```
+
 
 ## Modifying axis label appearance for readability
 
@@ -181,6 +209,15 @@ plot_us_states_by_area_angled
 plot_us_states_by_area
 ```
 
+```{r axis-label-rotate-ccw-solution}
+plot_us_states_by_area + 
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+```{r axis-label-rotate-ccw-check}
+grade_this_code()
+```
+
 In the exercise below, use the same function to rotate the axis labels for the state names by 45 degrees clockwise instead. (The labels should appear to be left-justified to the axis.) 
 
 ```{r}
@@ -191,6 +228,15 @@ plot_us_states_by_area +
 
 ```{r axis-label-rotate-cw, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
 plot_us_states_by_area
+```
+
+```{r axis-label-rotate-cw-solution}
+plot_us_states_by_area + 
+  scale_x_discrete(guide = guide_axis(angle = -45))
+```
+
+```{r axis-label-rotate-cw-check}
+grade_this_code()
 ```
 
 ### Dodging axis labels
@@ -206,6 +252,16 @@ plot_us_states_by_area +
 ```{r axis-label-dodge, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
 plot_us_states_by_area
 ```
+
+```{r axis-label-dodge-solution}
+plot_us_states_by_area + 
+  scale_x_discrete(guide = guide_axis(n.dodge = 5))
+```
+
+```{r axis-label-dodge-check}
+grade_this_code()
+```
+
 
 As you can see, for these data, dodging into as many as 5 rows still doesn't fully stop the state names from plotting on top of one another, and it's hard to tell which lollipops the labels in the lower rows are referring to. For this reason, I usually prefer rotating axis labels over dodging them, but either might be the best choice depending on the plot. We'll use counterclockwise-rotated axis labels for the rest of the plots in this section.
 
