@@ -1,17 +1,22 @@
 ---
 title: "ggplot2 aesthetics worksheet"
 author: "Monica Thieu"
-date: "7/6/2021"
-output: learnr::tutorial
+date: "Updated `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  learnr::tutorial:
+    progressive: true
 runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE,
+                      fig.asp = 3/4)
 require(tidyverse)
 require(learnr)
 require(gradethis)
-tutorial_options(exercise.eval = TRUE)
+tutorial_options(exercise.eval = TRUE,
+                 exercise.reveal_solution = FALSE,
+                 exercise.timelimit = 10)
 watermark <- function (x, y) {
   annotate("text",
            x = x, y = y,
@@ -83,23 +88,25 @@ In the exercise below, use the `labs()` function as demonstrated in [Section 8.1
 
 Hint: You only need to call `labs()` once to set all of these labels.
 
-```{r make-plot-iris, echo = TRUE}
+```{r make-plot-iris}
 plot_iris <- iris %>% 
   ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
   geom_boxplot()
 ```
 
-```{r}
-plot_iris +
-  labs(x = "Iris species",
-       y = "Petal length (cm)",
-       fill = "species",
-       title = "Iris petal length by species",
-       subtitle = "Three species") +
-  watermark(2, 4)
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-iris>>
 ```
 
-```{r add-labs, exercise = TRUE}
+```{r, include = FALSE}
+<<add-labs-solution>> 
+```
+
+```{r}
+last_plot() + watermark(2, 4)
+```
+
+```{r add-labs, exercise = TRUE, exercise.setup = "make-plot-iris"}
 plot_iris
 ```
 
@@ -116,7 +123,6 @@ plot_iris +
 grade_this_code()
 ```
 
-
 ## Modifying axis labels of discrete variables
 
 Sometimes, in addition to editing axis titles, you will also want to edit the level labels of a discrete variable to improve readability. For example, if you have a binary gender variable coded as "F" and "M" plotted on one axis, you may want to have the plot say "Female" and "Male" instead.
@@ -127,9 +133,7 @@ In the exercise below, use the function & argument demonstrated in [section 10.3
 -   Iris virginica -\> "Virginia iris"
 -   Iris versicolor -\> "Blue flag iris"
 
-Hint: In the example graph, the discrete labels are on the y-axis, but in this graph, the discrete labels are on the x-axis.
-
-```{r make-plot-iris-labeled}
+```{r make-plot-iris-labeled, exercise.setup = "make-plot-iris"}
 plot_iris_labeled <- plot_iris +
   labs(x = "Iris species",
        y = "Petal length (cm)",
@@ -138,17 +142,25 @@ plot_iris_labeled <- plot_iris +
        subtitle = "Three species")
 ```
 
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-iris-labeled>>
+```
+
+```{r, include = FALSE}
+<<change-axis-label-text-solution>> 
+```
+
 ```{r}
-plot_iris_labeled +
-  scale_x_discrete(labels = c("setosa" = "Bristle-pointed iris",
-                              "virginica" = "Virginia iris",
-                              "versicolor" = "Blue flag iris")) +
-  watermark(2, 4)
+last_plot() + watermark(2, 4)
 ```
 
 ```{r change-axis-label-text, exercise = TRUE, exercise.setup = "make-plot-iris-labeled"}
 plot_iris_labeled
 ```
+
+<div id="change-axis-label-text-hint">
+In the example graph, the discrete labels are on the y-axis, but in this graph, the discrete labels are on the x-axis.
+</div>
 
 ```{r change-axis-label-text-solution}
 plot_iris_labeled +
@@ -160,7 +172,6 @@ plot_iris_labeled +
 ```{r change-axis-label-text-check}
 grade_this_code()
 ```
-
 
 ## Modifying axis label appearance for readability
 
@@ -178,13 +189,19 @@ us_states_by_area <- tibble(state = datasets::state.name,
 
 First, we'll plot a lollipop plot with state on the x-axis, and area on the y-axis. With this plot style, we can reap the benefits of both bar graphs and point graphs for visualizing magnitude data like state areas. (The lines help illustrate the magnitude of each state's area, like a bar graph, but the skinniness of the lines and the "lollipop" points on top of each line make it easier to compare the area of each state than it would be comparing wide bars on a bar graph.)
 
-```{r make-plot-us-states-by-area}
+```{r make-plot-us-states-by-area, exercise.setup = "make-us-states-by-area"}
 plot_us_states_by_area <- us_states_by_area %>% 
   ggplot(aes(x = state, y = area)) + 
   # the stick of the lollipop
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   # the candy of the lollipop
   geom_point()
+```
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-us-states-by-area>>
+
+<<make-plot-us-states-by-area>>
 ```
 
 ```{r}
@@ -197,12 +214,12 @@ The state names along the x-axis are unreadable because they are written on top 
 
 In the exercise below, use one of the functions demonstrated in [section 10.3.3](https://ggplot2-book.org/scale-position.html#guide_axis) of the textbook to rotate the axis labels for the state names by 45 degrees counter-clockwise. (The labels should appear to be right-justified to the axis.) 
 
-```{r}
-plot_us_states_by_area_angled <- plot_us_states_by_area + 
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  watermark(25, 3e5)
+```{r, include = FALSE}
+<<axis-label-rotate-ccw-solution>> 
+```
 
-plot_us_states_by_area_angled
+```{r}
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r axis-label-rotate-ccw, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
@@ -218,17 +235,25 @@ plot_us_states_by_area +
 grade_this_code()
 ```
 
+###
+
 In the exercise below, use the same function to rotate the axis labels for the state names by 45 degrees clockwise instead. (The labels should appear to be left-justified to the axis.) 
 
+```{r, include = FALSE}
+<<axis-label-rotate-cw-solution>> 
+```
+
 ```{r}
-plot_us_states_by_area +
-  scale_x_discrete(guide = guide_axis(angle = -45)) + 
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r axis-label-rotate-cw, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
 plot_us_states_by_area
 ```
+
+<div id="axis-label-rotate-cw-hint">
+If rotating by +45 rotates the axis labels by 45 degrees clockwise, what would rotating by a negative number do?
+</div>
 
 ```{r axis-label-rotate-cw-solution}
 plot_us_states_by_area + 
@@ -243,10 +268,12 @@ grade_this_code()
 
 Now, use another function demonstrated in section 10.3.3 to "dodge" the axis labels by a factor of 5 so that state name labels are jittered into 5 rows.
 
+```{r, include = FALSE}
+<<axis-label-dodge-solution>> 
+```
+
 ```{r}
-plot_us_states_by_area + 
-  scale_x_discrete(guide = guide_axis(n.dodge = 5)) +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r axis-label-dodge, exercise = TRUE, exercise.setup = "make-plot-us-states-by-area"}
@@ -282,13 +309,12 @@ us_states_by_area %>%
 
 In the exercise below, use the function demonstrated in the [forcats package vignette: Ordering by another variable](https://forcats.tidyverse.org/articles/forcats.html#ordering-by-another-variable-1) to reorder the states along the x-axis by area from smallest to largest.
 
+```{r, include = FALSE}
+<<fct-reorder-solution>> 
+```
+
 ```{r}
-us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
-  geom_segment(aes(xend = state, y = 0, yend = area)) +
-  geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r fct-reorder, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
@@ -299,15 +325,32 @@ us_states_by_area %>%
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
-Now, refer to the function's [docs](https://forcats.tidyverse.org/reference/fct_reorder.html) and use another argument to flip the reordering, so the states are ordered from largest to smallest instead.
+<div id="fct-reorder-hint">
+Remember that by default, if axis titles are not manually changed, the x- and y-axis titles are the same as the values that were entered in `ggplot(aes(x = ###, y = ###))`. The solution plot is thus showing you part of the answer.
+</div>
 
-```{r}
+```{r fct-reorder-solution}
 us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area, .desc = TRUE), y = area)) + 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  watermark(25, 3e5)
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+```{r fct-reorder-check}
+grade_this_code()
+```
+
+###
+
+Now, refer to the function's [docs](https://forcats.tidyverse.org/reference/fct_reorder.html) and use another argument to flip the reordering, so the states are ordered from largest to smallest instead.
+
+```{r, include = FALSE}
+<<fct-reorder-desc-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r fct-reorder-desc, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
@@ -318,9 +361,23 @@ us_states_by_area %>%
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
+```{r fct-reorder-desc-solution}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area, .desc = TRUE), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45))
+```
+
+```{r fct-reorder-desc-check}
+grade_this_code()
+```
+
+###
+
 Bonus exercise: Since the x-axis label looks pretty gnarly now because of the code used to reorder states along the x-axis by their area, and we should re-label axes and title our plot anyway, use `labs()` to relabel the plot of US states by area to match the solution plot below.
 
-```{r make-plot-us-states-ang-reo, echo = TRUE}
+```{r make-plot-us-states-ang-reo, exercise.setup = "make-us-states-by-area"}
 plot_us_states_by_area_angled_reordered <- us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
@@ -328,16 +385,31 @@ plot_us_states_by_area_angled_reordered <- us_states_by_area %>%
   scale_x_discrete(guide = guide_axis(angle = 45))
 ```
 
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-us-states-ang-reo>>
+```
+
+```{r, include = FALSE}
+<<labs-fct-reorder-desc-solution>> 
+```
+
 ```{r}
-plot_us_states_by_area_angled_reordered +
-  labs(x = "US state",
-       y = "Area (sq mi)",
-       title = "Alaska is really big") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r labs-fct-reorder-desc, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo"}
 plot_us_states_by_area_angled_reordered
+```
+
+```{r labs-fct-reorder-desc-solution}
+plot_us_states_by_area_angled_reordered +
+  labs(x = "US state",
+       y = "Area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r labs-fct-reorder-desc-check}
+grade_this_code()
 ```
 
 ## Adjusting continuous axis limits
@@ -346,11 +418,15 @@ Since the last few exercises demonstrated aesthetic adjustments you might make t
 
 Right now, we'll pivot back to the iris flower size plot from the beginning of the worksheet. We'll now turn to adjusting aesthetics along the y-axis, representing the continuous variable of iris petal length in centimeters.
 
-```{r make-plot-iris-lab-common, echo = TRUE}
+```{r make-plot-iris-lab-common, exercise.setup = "make-plot-iris-labeled"}
 plot_iris_labeled_commonname <- plot_iris_labeled +
   scale_x_discrete(labels = c("setosa" = "Bristle-pointed iris",
                               "virginica" = "Virginia iris",
                               "versicolor" = "Blue flag iris"))
+```
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-iris-lab-common>>
 ```
 
 ```{r}
@@ -365,14 +441,25 @@ One common axis limit change you might make is to expand limits to include 0. If
 
 In the exercise below, use the `ggplot2` function `expand_limits()` to show 0 on the y-axis, feferring to the function [docs](https://ggplot2.tidyverse.org/reference/expand_limits.html) for more info on what arguments to set.
 
+```{r, include = FALSE}
+<<expand-limits-solution>> 
+```
+
 ```{r}
-plot_iris_labeled_commonname +
-  expand_limits(y = 0) +
-  watermark(2, 3.5)
+last_plot() + watermark(2, 3.5)
 ```
 
 ```{r expand-limits, exercise = TRUE, exercise.setup = "make-plot-iris-lab-common"}
 plot_iris_labeled_commonname
+```
+
+```{r expand-limits-solution}
+plot_iris_labeled_commonname +
+  expand_limits(y = 0)
+```
+
+```{r expand-limits-check}
+grade_this_code()
 ```
 
 One big benefit of `expand_limits()` is that you don't need to know anything about the actual range of your data. You just have to tell the function what value you want to include on the axis, and your ggplot will show that number as well as the rest of your data.
@@ -383,14 +470,25 @@ Sometimes, you may want to change your axes to "zoom" your plot to a specific ra
 
 In the exercise below, use the "zooming" limit adjustment function (NOT the one that will trim data if they fall outside of the limits!) to change the y-axis bounds to 0 on the lower end and 8 on the higher end, referring to [section 10.1.2](https://ggplot2-book.org/scale-position.html#oob) of the textbook for examples.
 
+```{r, include = FALSE}
+<<coord-cartesian-limits-solution>> 
+```
+
 ```{r}
-plot_iris_labeled_commonname +
-  coord_cartesian(ylim = c(0, 8)) +
-  watermark(2, 3.5)
+last_plot() + watermark(2, 3.5)
 ```
 
 ```{r coord-cartesian-limits, exercise = TRUE}
 plot_iris_labeled_commonname
+```
+
+```{r coord-cartesian-limits-solution}
+plot_iris_labeled_commonname +
+  coord_cartesian(ylim = c(0, 8))
+```
+
+```{r coord-cartesian-limits-check}
+grade_this_code()
 ```
 
 ## Scaling continuous axes
@@ -410,6 +508,11 @@ plot_starwars_mass <- starwars %>%
        subtitle = "Episodes I-IX")
 ```
 
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-starwars-mass>>
+```
+
 ```{r}
 plot_starwars_mass
 ```
@@ -418,14 +521,25 @@ Jabba the Hutt is far and away the heaviest character (all that organized crime 
 
 To address this, in the exercise below, use one of the convenience functions demonstrated in [section 10.1.9](https://ggplot2-book.org/scale-position.html#scale-transformation) of the textbook to show x-axis tick labels on the log-10 scale.
 
+```{r, include = FALSE}
+<<scale-x-log10-solution>> 
+```
+
 ```{r}
-plot_starwars_mass +
-  scale_x_log10() +
-  watermark(150, 10)
+last_plot() + watermark(150, 10)
 ```
 
 ```{r scale-x-log10, exercise = TRUE, exercise.setup = "make-plot-starwars-mass"}
 plot_starwars_mass
+```
+
+```{r scale-x-log10-solution}
+plot_starwars_mass +
+  scale_x_log10()
+```
+
+```{r scale-x-log10-check}
+grade_this_code()
 ```
 
 I like this method of axis scaling when possible because it shows the axis ticks at log-distance from each other, but still has the axis tick labels in real units, not log-transformed units.
@@ -438,56 +552,97 @@ For example, along the y-axis of the histogram of Star Wars' characters' masses,
 
 ### Set axis break width
 
-First, in the exercise below, use `scales::breaks_width()` to set the major breaks to occur on the 10s, as shown in [section 10.1.5](https://ggplot2-book.org/scale-position.html#break-functions) of the textbook.
+First, in the exercise below, use `scales::breaks_width()` to set the major breaks to occur on the **10s,** as shown in [section 10.1.5](https://ggplot2-book.org/scale-position.html#break-functions) of the textbook.
 
-```{r make-plot-starwars-mass-log10, echo = TRUE}
+```{r make-plot-starwars-mass-log10, exercise.setup = "make-plot-starwars-mass"}
 plot_starwars_mass_log10 <- plot_starwars_mass +
   scale_x_log10()
 ```
 
+```{r, echo = TRUE, eval = FALSE}
+<< make-plot-starwars-mass-log10>>
+```
+
+```{r, include = FALSE}
+<<breaks-width-solution>> 
+```
+
 ```{r}
-plot_starwars_mass +
-  scale_x_log10() +
-  scale_y_continuous(breaks = scales::breaks_width(10)) +
-  watermark(150, 10)
+last_plot() + watermark(150, 10)
 ```
 
 ```{r breaks-width, exercise = TRUE, exercise.setup = "make-plot-starwars-mass-log10"}
 plot_starwars_mass_log10
 ```
 
-### Set number of major breaks
-
-Next, use `scales::breaks_extended()` to redraw the y-axis grid lines with 12 major grid lines, as demonstrated in the same textbook section as the previous exercise.
-
-```{r}
+```{r breaks-width-solution}
 plot_starwars_mass +
   scale_x_log10() +
-  scale_y_continuous(breaks = scales::breaks_extended(n = 12)) +
-  watermark(150, 10)
+  scale_y_continuous(breaks = scales::breaks_width(10))
+```
+
+```{r breaks-width-check}
+grade_this_code()
+```
+
+### Set number of major breaks
+
+Next, use `scales::breaks_extended()` to redraw the y-axis grid lines with **12** major grid lines, as demonstrated in the same textbook section as the previous exercise.
+
+```{r, include = FALSE}
+<<breaks-n-solution>> 
+```
+
+```{r}
+last_plot() + watermark(150, 10)
 ```
 
 ```{r breaks-n, exercise = TRUE, exercise.setup = "make-plot-starwars-mass-log10"}
 plot_starwars_mass_log10
 ```
 
+```{r breaks-n-solution}
+plot_starwars_mass +
+  scale_x_log10() +
+  scale_y_continuous(breaks = scales::breaks_extended(n = 12))
+```
+
+```{r breaks-n-check}
+grade_this_code()
+```
+
 ### Manually set break values
 
 Next, use `seq()` (NOT a `ggplot2` smart-breaks function!) to create a vector stepping from 0 to 20 in steps of 4 to manually draw the y-axis major breaks at 0, 4, 8 ... 20.
 
-Hint: This will be a little different than the previous two, but if you had to guess how the code would look, try that!
-
-Hint 2: You will need to manually assign the vector to the `breaks` argument of `scale_y_continuous`.
+```{r, include = FALSE}
+<<breaks-manual-solution>> 
+```
 
 ```{r}
-plot_starwars_mass +
-  scale_x_log10() +
-  scale_y_continuous(breaks = seq(0, 20, 4)) +
-  watermark(150, 10)
+last_plot() + watermark(150, 10)
 ```
 
 ```{r breaks-manual, exercise = TRUE, exercise.setup = "make-plot-starwars-mass-log10"}
 plot_starwars_mass_log10
+```
+
+<div id="breaks-manual-hint-1">
+This will be a little different than the previous two, but if you _had_ to guess how the code would look, try that!
+</div>
+
+<div id="breaks-manual-hint-2">
+You will need to manually assign the vector to the `breaks` argument of `scale_y_continuous`.
+</div>
+
+```{r breaks-manual-solution}
+plot_starwars_mass +
+  scale_x_log10() +
+  scale_y_continuous(breaks = seq(0, 20, 4))
+```
+
+```{r breaks-manual-check}
+grade_this_code()
 ```
 
 ## Changing colors of data elements
@@ -506,17 +661,12 @@ In the exercise below, modify the base plotting call so that lollipop color (bot
 
 Refer to [section 11.3.1](https://ggplot2-book.org/scale-colour.html#brewer-scales) of the textbook for examples.
 
+```{r, include = FALSE}
+<<change-data-color-brewer-solution>> 
+```
+
 ```{r}
-us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area), y = area, color = region)) + 
-  geom_segment(aes(xend = state, y = 0, yend = area)) +
-  geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  scale_color_brewer(palette = "Dark2") +
-  labs(x = "US state",
-       y = "area (sq mi)",
-       title = "Alaska is really big") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r change-data-color-brewer, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
@@ -530,25 +680,36 @@ us_states_by_area %>%
        title = "Alaska is really big")
 ```
 
+```{r change-data-color-brewer-solution}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = region)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r change-data-color-brewer-check}
+grade_this_code()
+```
+
+###
+
 Next, we will try out another pre-made color scheme, this time for continuous data. The [viridis](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html) color map set was originally made for Python's matplotlib package, but has since been ported to R as well. The viridis color maps were designed to show continuously varying data in an attractive, colorblind-safe, and perceptually uniform way.
 
 In the exercise below, modify the base plotting call so that lollipop color varies with `area` in the data (yes, area is also plotted on other axes, so when done correctly, the lollipops should get lighter from left to right because color will be confounded with x-axis position and lollipop height). Additionally, set the color scheme to use viridis (for continuous data) with palette option "inferno".
 
 Refer to [section 11.2.1](https://ggplot2-book.org/scale-colour.html#particular-palettes) of the textbook for examples.
 
-Hint: There are a couple versions of the viridis color scale functions in `ggplot2`. Be sure to use the one for _continuous_ data.
+```{r, include = FALSE}
+<<change-data-color-viridis-solution>> 
+```
 
 ```{r}
-us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
-  geom_segment(aes(xend = state, y = 0, yend = area)) +
-  geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  scale_color_viridis_c(option = "inferno") +
-  labs(x = "US state",
-       y = "area (sq mi)",
-       title = "Alaska is really big") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r change-data-color-viridis, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
@@ -562,6 +723,26 @@ us_states_by_area %>%
        title = "Alaska is really big")
 ```
 
+<div id="change-data-color-viridis-hint">
+There are a couple versions of the viridis color scale functions in `ggplot2`. Be sure to use the one for _continuous_ data.
+</div>
+
+```{r change-data-color-viridis-solution}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_viridis_c(option = "inferno") +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r change-data-color-viridis-check}
+grade_this_code()
+```
+
 ### Applying custom color schemes
 
 If you want to fully customize your plot colors, you may choose to select your own color scheme. You can do this too! Bear in mind that colors you select may not have the same perceptual properties as pre-made color schemes, but if your colors have some significance (matching the colors of your institution, for example) they should still look nice.
@@ -570,20 +751,16 @@ If you want to fully customize your plot colors, you may choose to select your o
 
 First, you can wholesale change the color of data elements, even when color isn't mapped to a variable. The default color of lines and points on a graph is black, but can be set to any single color you please.
 
-In the exercise below, set the line segments to the constant hex color "#825324", and set the points to the constant named color "forestgreen". The lollipops should look like very skinny trees.
+In the exercise below, set the line segments to the constant hex color **"#825324",** and set the points to the constant named color **"forestgreen".** The lollipops should look like very skinny trees.
 
 Refer to [sections 14.4.1 and 14.4.2](https://ggplot2-book.org/layers.html#plots-and-layers) of the textbook for help with this, especially in differentiating where in the functions the color argument should be specified to have the desired behavior.
 
+```{r, include = FALSE}
+<<change-data-color-manual-constant-solution>> 
+```
+
 ```{r}
-us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
-  geom_segment(aes(xend = state, y = 0, yend = area), color = "#825324") +
-  geom_point(color = "forestgreen") +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  labs(x = "US state",
-       y = "area (sq mi)",
-       title = "Alaska is really big") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r change-data-color-manual-constant, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
@@ -597,6 +774,23 @@ us_states_by_area %>%
        title = "Alaska is really big")
 ```
 
+```{r change-data-color-manual-constant-solution}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area), color = "#825324") +
+  geom_point(color = "forestgreen") +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r change-data-color-manual-constant-check}
+grade_this_code()
+```
+
+###
+
 Next, we'll go back to customizing the color scales used for differentiating data by color. In the exercise below, use `scale_color_manual()` to specify a custom discrete color scale for the `region` variable with the following regions mapped to the following colors:
 
 * Northeast: "firebrick"
@@ -606,20 +800,12 @@ Next, we'll go back to customizing the color scales used for differentiating dat
 
 Refer to [section 11.3.3](https://ggplot2-book.org/scale-colour.html#manual-scales) of the textbook for examples.
 
+```{r, include = FALSE}
+<<change-data-color-manual-discrete-solution>> 
+```
+
 ```{r}
-us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area), y = area, color = region)) + 
-  geom_segment(aes(xend = state, y = 0, yend = area)) +
-  geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  scale_color_manual(values = c("Northeast" = "firebrick",
-                                "South" = "navyblue",
-                                "North Central" = "lightpink",
-                                "West" = "skyblue")) +
-  labs(x = "US state",
-       y = "area (sq mi)",
-       title = "Alaska is really big") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r change-data-color-manual-discrete, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
@@ -633,11 +819,55 @@ us_states_by_area %>%
        title = "Alaska is really big")
 ```
 
-In the exercise below, use `scale_color_gradient()` to set `area` to vary with a custom unidirectional color gradient going from "#000000" on the low end to "#ff3dab" on the high end.
+<div id="change-data-color-manual-discrete-hint">
+Be sure to _name_ the colors in your `values` vector according to which variable levels they should map to. This will ensure that the correct colors go on the correct levels, no matter what order they're specified in.
+</div>
+
+```{r change-data-color-manual-discrete-solution}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = region)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_manual(values = c("Northeast" = "firebrick",
+                                "South" = "navyblue",
+                                "North Central" = "lightpink",
+                                "West" = "skyblue")) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r change-data-color-manual-discrete-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, use `scale_color_gradient()` to set `area` to vary with a custom unidirectional color gradient going from **"#000000"** on the low end to **"#ff3dab"** on the high end.
 
 Refer to [section 11.2.2](https://ggplot2-book.org/scale-colour.html#robust-recipes) of the textbook. You may need to scroll down a little bit for examples.
 
+```{r, include = FALSE}
+<<change-data-color-manual-cont-solution>> 
+```
+
 ```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r change-data-color-manual-cont, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r change-data-color-manual-cont-solution}
 us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
@@ -650,15 +880,8 @@ us_states_by_area %>%
   watermark(25, 3e5)
 ```
 
-```{r change-data-color-manual-cont, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
-us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
-  geom_segment(aes(xend = state, y = 0, yend = area)) +
-  geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  labs(x = "US state",
-       y = "area (sq mi)",
-       title = "Alaska is really big")
+```{r change-data-color-manual-cont-check}
+grade_this_code()
 ```
 
 ### Rescaling continuous color variables
@@ -682,21 +905,16 @@ us_states_by_area %>%
 
 By setting some arguments in `scale_color_viridis_c()` (or whatever continuous color scale function is being applied), we can manually set bounds on the color scale, and tell `ggplot2` to plot any values outside the bounds at the min or max color respectively. This behavior is called "squishing" the color scale.
 
-In the exercise below, add arguments at the beginning of `scale_color_viridis_c()` to set the color scale min to 0, the max to 200,000 (a bit smaller than Texas--this will set the biggest 2 states to be "squished" to the max color), and the out-of-bounds behavior to `scales::squish` to actually squish the values, as opposed to graying out the two biggest states. 
+In the exercise below, add arguments at the beginning of `scale_color_viridis_c()` to set the color scale min to **0,** the max to **200,000** (a bit smaller than Texas--this will set the biggest 2 states to be "squished" to the max color), and the out-of-bounds behavior to `scales::squish` to actually squish the values, as opposed to graying out the two biggest states. 
 
 Refer to [section 10.1.2](https://ggplot2-book.org/scale-position.html?q=oob#oob) of the textbook for an example, although this section isn't strictly dedicated to handling skewed color scales.
 
+```{r, include = FALSE}
+<<data-color-squish-solution>> 
+```
+
 ```{r}
-us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
-  geom_segment(aes(xend = state, y = 0, yend = area)) +
-  geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  scale_color_viridis_c(limits = c(0, 2e5), oob = scales::squish, option = "inferno") +
-  labs(x = "US state",
-       y = "area (sq mi)",
-       title = "Alaska is really big") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r data-color-squish, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
@@ -705,9 +923,26 @@ us_states_by_area %>%
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_viridis_c(option = "inferno") +
   labs(x = "US state",
        y = "area (sq mi)",
        title = "Alaska is really big")
+```
+
+```{r data-color-squish-solution}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area, color = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  scale_color_viridis_c(limits = c(0, 2e5), oob = scales::squish, option = "inferno") +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r data-color-squish-check}
+grade_this_code()
 ```
 
 In my field of cognitive neuroscience, I use this functionality when plotting statistics on brain images, if one brain region's value is so high that it's skewing the color scale for the rest of the regions. You might find it useful in another context, but it's good to know how to do!
@@ -718,7 +953,7 @@ In this brief section, we'll practice placing annotations on plots. If you want 
 
 For these exercises, we can stick with the plot of US states by area we've been using.
 
-```{r make-plot-us-states-ang-reo-lab}
+```{r make-plot-us-states-ang-reo-lab, exercise.setup = "make-us-states-by-area"}
 plot_us_states_by_area_angled_reordered_labeled <- us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
@@ -727,6 +962,10 @@ plot_us_states_by_area_angled_reordered_labeled <- us_states_by_area %>%
   labs(x = "US state",
        y = "Area (sq mi)",
        title = "Alaska is really big")
+```
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-us-states-ang-reo-lab>>
 ```
 
 ```{r}
@@ -739,38 +978,46 @@ Often, it's useful to compare data on a plot to a particular reference value. Th
 
 For example, we might like to compare the area of US states to the area of a specific other country. (The US is so big that many individual states are larger than other sovereign nations in the world.)
 
-In this exercise, use `geom_hline()` to place a dashed horizontal reference line across the graph at 57,321 sq mi, the area of Bangladesh. Set the color of this line to "springgreen4".
+In this exercise, use `geom_hline()` to place a dashed horizontal reference line across the graph at **57,321 sq mi,** the area of Bangladesh. Set the color of this line to **"springgreen4".**
 
 Refer to [section 8.3](https://ggplot2-book.org/annotations.html#custom-annotations) of the textbook for an example (though the example uses a vertical line instead of a horizontal one, the arguments are very similar), and to the relevant function [docs](https://ggplot2.tidyverse.org/reference/geom_abline.html) for more information on what arguments `geom_hline()` takes.
 
+```{r, include = FALSE}
+<<hline-solution>> 
+```
+
 ```{r}
-plot_us_states_by_area_angled_reordered_labeled +
-  geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r hline, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab"}
 plot_us_states_by_area_angled_reordered_labeled
 ```
 
-Notice how the reference line is drawn on top of the lollipops? This is a direct result of the order in which the plot was constructed. The layers for the lollipop parts (the line segments and the points) were set before the reference line was added, so they are plotted below the reference line. By changing the order in which the layers are added on the plot, we can draw the reference line first, so that the lollipops are drawn on top (and are easier to see).
-
-In the exercise below, alter the order of the layers in the plot construction code to draw the reference line beneath the lollipops (under both the line segments and the points).
-
-```{r}
-us_states_by_area %>% 
-  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
-  geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4") +
-  geom_segment(aes(xend = state, y = 0, yend = area)) +
-  geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 45)) +
-  labs(x = "US state",
-       y = "Area (sq mi)",
-       title = "Alaska is really big") +
-  watermark(25, 3e5)
+```{r hline-solution}
+plot_us_states_by_area_angled_reordered_labeled +
+  geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4")
 ```
 
-```{r hline-beneath, exercise = TRUE}
+```{r hline-check}
+grade_this_code()
+```
+
+###
+
+Notice how the reference line is drawn on top of the lollipops? This is a direct result of the order in which the plot was constructed. The layers for the lollipop parts (the line segments and the points) were set before the reference line was added, so they are plotted below the reference line. By changing the order in which the layers are added on the plot, we can draw the reference line first, so that the lollipops are drawn on top (and are easier to see).
+
+In the exercise below, alter the order of the layers in the plot construction code to draw the reference line _beneath_ the lollipops (under both the line segments and the points).
+
+```{r, include = FALSE}
+<<hline-beneath-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r hline-beneath, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
 us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area)) + 
   geom_segment(aes(xend = state, y = 0, yend = area)) +
@@ -780,6 +1027,22 @@ us_states_by_area %>%
        y = "Area (sq mi)",
        title = "Alaska is really big") +
   geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4")
+```
+
+```{r hline-beneath-solution}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4") +
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "Area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r hline-beneath-check}
+grade_this_code()
 ```
 
 (For other types of reference lines, `geom_vline()` draws vertical lines, and `geom_abline()` draws diagonal lines of any slope, but we won't use those in this worksheet.)
@@ -798,15 +1061,28 @@ In the exercise below, use `geom_text()` to plot `abbrev`, the postal code varia
 
 Refer to some of the examples in the later half of [section 8.2](https://ggplot2-book.org/annotations.html#text-labels) of the textbook to see how `geom_text()` is used.
 
+```{r, include = FALSE}
+<<geom-text-solution>> 
+```
+
 ```{r}
-plot_us_states_by_area_angled_reordered_labeled +
-  geom_text(aes(label = abbrev)) +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r geom-text, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab"}
 plot_us_states_by_area_angled_reordered_labeled
 ```
+
+```{r geom-text-solution}
+plot_us_states_by_area_angled_reordered_labeled +
+  geom_text(aes(label = abbrev))
+```
+
+```{r geom-text-check}
+grade_this_code()
+```
+
+###
 
 The labels are on the plot now, but they're unreadable because they're right on top of the lollipop points, and because they're overplotting a bit on one another because of their size.
 
@@ -814,10 +1090,12 @@ In the exercise below, improve label readability by adding arguments to `geom_te
 
 Refer to the function [docs](https://ggplot2.tidyverse.org/reference/geom_text.html) to see what the necessary arguments are called.
 
+```{r, include = FALSE}
+<<geom-text-nudge-size-solution>> 
+```
+
 ```{r}
-plot_us_states_by_area_angled_reordered_labeled +
-  geom_text(aes(label = abbrev), nudge_y = 30000, size = 2) +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r geom-text-nudge-size, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab"}
@@ -825,15 +1103,26 @@ plot_us_states_by_area_angled_reordered_labeled +
   geom_text(aes(label = abbrev))
 ```
 
+```{r geom-text-nudge-size-solution}
+plot_us_states_by_area_angled_reordered_labeled +
+  geom_text(aes(label = abbrev), nudge_y = 30000, size = 2)
+```
+
+```{r geom-text-nudge-size-check}
+grade_this_code()
+```
+
+###
+
 The other method of adding text annotations is to add one-off annotations by manually specifying what you want the label to say and where you want it to appear on the plot. We will use the function `annotate()` for one-off annotations. Instead of drawing x and y locations from the base plot, `annotate()` expects manual x-y pairs.
 
 Take the plot we made before with the reference line demarcating the area of Bangladesh. We can add a single text annotation next to the reference line labeling what it refers to.
 
-In the exercise below, use `annotate()` to add a `geom_text`-type annotation saying "Area of Bangladesh" with an x-coordinate of 1 (putting it on the far left of the plot) and a y-coordinate of 57,321 (the area of Bangladesh, putting it at the same height as the reference line).
+In the exercise below, use `annotate()` to add a `geom_text`-type annotation saying "Area of Bangladesh" with an x-coordinate of **1** (putting it on the far left of the plot) and a y-coordinate of **57,321** (the area of Bangladesh, putting it at the same height as the reference line).
 
 Refer to some of the examples in [section 8.3](https://ggplot2-book.org/annotations.html#custom-annotations) to see how to specify the arguments for a text annotation.
 
-```{r make-plot-us-states-ang-reo-lab-ann}
+```{r make-plot-us-states-ang-reo-lab-ann, exercise.setup = "make-us-states-by-area"}
 plot_us_states_by_area_angled_reordered_labeled_annot <- us_states_by_area %>% 
   ggplot(aes(x = fct_reorder(state, area), y = area)) + 
   geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4") +
@@ -843,21 +1132,37 @@ plot_us_states_by_area_angled_reordered_labeled_annot <- us_states_by_area %>%
   labs(x = "US state",
        y = "Area (sq mi)",
        title = "Alaska is really big")
+```
 
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-us-states-ang-reo-lab-ann>>
+```
+
+```{r, include = FALSE}
+<<annotate-solution>> 
 ```
 
 ```{r}
-plot_us_states_by_area_angled_reordered_labeled_annot +
-  annotate("text",
-           x = 1,
-           y = 57321,
-           label = "Area of Bangladesh") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r annotate, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab-ann"}
 plot_us_states_by_area_angled_reordered_labeled_annot
 ```
+
+```{r annotate-solution}
+plot_us_states_by_area_angled_reordered_labeled_annot +
+  annotate("text",
+           x = 1,
+           y = 57321,
+           label = "Area of Bangladesh")
+```
+
+```{r annotate-check}
+grade_this_code()
+```
+
+###
 
 The annotation appears on the plot, but it looks like the center of the text is justified to (1, 57321), causing the line to go through the text, and half of the text to spill off the plot.
 
@@ -867,15 +1172,12 @@ In the exercise below, add arguments to `annotate()` to set the label's horizont
 
 Refer to some of the examples in [section 8.2](https://ggplot2-book.org/annotations.html#text-labels) of the textbook, as well as the function docs for `geom_text()`, to identify the correct arguments to set. Note that even though you are calling `annotate()`, the arguments eventually get passed down to `geom_text()` when `ggplot2` draws the annotation, which is why you have to look in the `geom_text()` docs for the function argument info.
 
+```{r, include = FALSE}
+<<annotate-just-solution>> 
+```
+
 ```{r}
-plot_us_states_by_area_angled_reordered_labeled_annot +
-  annotate(geom = "text",
-           x = 1,
-           y = 57321,
-           hjust = "left",
-           vjust = "bottom",
-           label = "Area of Bangladesh") +
-  watermark(25, 3e5)
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r annotate-just, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab-ann"}
@@ -886,17 +1188,30 @@ plot_us_states_by_area_angled_reordered_labeled_annot +
            label = "Area of Bangladesh")
 ```
 
-Finally, in the exercise below, change the geom being called by `annotate()` from `geom_text()` to `geom_label()`, which is an alternate way of drawing text on plots, but with an opaque background. `geom_label()` is an attractive alternative to `geom_text()` when the plot behind the text is very noisy.
-
-```{r}
+```{r annotate-just-solution}
 plot_us_states_by_area_angled_reordered_labeled_annot +
-  annotate(geom = "label",
+  annotate(geom = "text",
            x = 1,
            y = 57321,
            hjust = "left",
            vjust = "bottom",
-           label = "Area of Bangladesh") +
-  watermark(25, 3e5)
+           label = "Area of Bangladesh")
+```
+
+```{r annotate-just-check}
+grade_this_code()
+```
+
+###
+
+Finally, in the exercise below, change the geom being called by `annotate()` from `geom_text()` to `geom_label()`, which is an alternate way of drawing text on plots, but with an opaque background. `geom_label()` is an attractive alternative to `geom_text()` when the plot behind the text is very noisy.
+
+```{r, include = FALSE}
+<<annotate-label-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
 ```
 
 ```{r annotate-label, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab-ann"}
@@ -907,6 +1222,20 @@ plot_us_states_by_area_angled_reordered_labeled_annot +
            hjust = "left",
            vjust = "bottom",
            label = "Area of Bangladesh")
+```
+
+```{r annotate-label-solution}
+plot_us_states_by_area_angled_reordered_labeled_annot +
+  annotate(geom = "label",
+           x = 1,
+           y = 57321,
+           hjust = "left",
+           vjust = "bottom",
+           label = "Area of Bangladesh")
+```
+
+```{r annotate-label-check}
+grade_this_code()
 ```
 
 Note: `annotate()` is what is used to print the big "EXAMPLE!" stamp on the solution plots in this worksheet!
@@ -925,6 +1254,10 @@ plot_datasaurus <- datasauRus::datasaurus_dozen_wide %>%
        subtitle = "Datasaurus says: always visualize your data.")
 ```
 
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-datasaurus>>
+```
+
 ```{r}
 plot_datasaurus
 ```
@@ -937,38 +1270,75 @@ Refer to [section 18.2](https://ggplot2-book.org/polishing.html#themes) of the t
 
 In the exercise below, add a theme command to render the Datasaurus plot in `ggplot2`'s built-in theme that features a white plot background, gray grid lines, and black borders.
 
-```{r}
-plot_datasaurus +
-  theme_bw() +
-  watermark(60, 50)
+```{r, include = FALSE}
+<<theme-bw-solution>> 
 ```
 
-```{r theme-bw, echo = TRUE, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r theme-bw, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
+
+```{r theme-bw-solution}
+plot_datasaurus +
+  theme_bw()
+```
+
+```{r theme-bw-check}
+grade_this_code()
+```
+
+###
 
 In the exercise below, add a theme command to render this plot in `ggplot2`'s "minimal" theme.
 
-```{r}
-plot_datasaurus +
-  theme_minimal() +
-  watermark(60, 50)
+```{r, include = FALSE}
+<<theme-minimal-solution>> 
 ```
 
-```{r theme-minimal, echo = TRUE, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r theme-minimal, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
+
+```{r theme-minimal-solution}
+plot_datasaurus +
+  theme_minimal()
+```
+
+```{r theme-minimal-check}
+grade_this_code()
+```
+
+###
 
 In the exercise below, add a theme command to render this plot in `ggplot2`'s "classic" theme (designed to look like base R's default plots).
 
-```{r}
-plot_datasaurus +
-  theme_classic() +
-  watermark(60, 50)
+```{r, include = FALSE}
+<<theme-classic-solution>> 
 ```
 
-```{r theme-classic, echo = TRUE, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r theme-classic, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
+```
+
+```{r theme-classic-solution}
+plot_datasaurus +
+  theme_classic()
+```
+
+```{r theme-classic-check}
+grade_this_code()
 ```
 
 ## Modifying text aesthetics
@@ -981,77 +1351,141 @@ In this group of exercises, we will practice customizing text elements using `el
 
 ### Changing text color
 
-In the exercise below, change the color of _all_ text elements on the plot to "chartreuse4".
+In the exercise below, change the color of _all_ text elements on the plot to **"chartreuse4".**
 
 Refer to [section 18.3](https://ggplot2-book.org/polishing.html#modifying-theme-components) for examples of how to use the various arguments of `theme()` to adjust their respective theme elements, to the [docs](https://ggplot2.tidyverse.org/reference/theme.html) for `theme()` to identify which theme element should be modified, and to the [docs](https://ggplot2.tidyverse.org/reference/element.html) for `element_text()` for specific argument names.
 
-Hint: There is a single `theme()` argument that will modify every single text element in the graph.
+```{r, include = FALSE}
+<<change-text-color-all-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(text = element_text(color = "chartreuse4")) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-text-color-all, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
-In the exercise below, change the color of *just* the plot title to "chartreuse4".
+<div id="change-text-color-all-hint">
+There is a single `theme()` argument that will modify every single text element in the graph.
+</div>
+
+```{r change-text-color-all-solution}
+plot_datasaurus +
+  theme(text = element_text(color = "chartreuse4"))
+```
+
+```{r change-text-color-all-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, change the color of *just* the plot title to **"chartreuse4".**
 
 Refer to the docs for `theme()` again to find the correct theme element argument to modify.
 
+```{r, include = FALSE}
+<<change-text-color-title-solution>> 
+```
+
 ```{r}
-plot_datasaurus +
-  theme(plot.title = element_text(color = "chartreuse4")) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-text-color-title, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
+```{r change-text-color-title-solution}
+plot_datasaurus +
+  theme(plot.title = element_text(color = "chartreuse4"))
+```
+
+```{r change-text-color-title-check}
+grade_this_code()
+```
+
 ### Changing fonts
 
-In the exercise below, change all the text on the plot to use the font Comic Sans MS.
+In the exercise below, change all the text on the plot to use the font **Courier New.**
 
-WARNING: If you try and try and you can't get this to run, that's okay! You can either try the name of another font you know exists on your computer, or if that still doesn't work, don't worry about it. While I've tried to show the lightest-weight method here, R plot fonts can get very dicey, and rely on a lot of specific computer settings to work sometimes.
+WARNING: If this technique fails to change the font in a plot on your own machine, that's okay! You can either try the name of another font you know exists on your computer, or if that still doesn't work, don't worry about it. While I've tried to show the lightest-weight method here, R plot fonts can get very dicey, and rely on a lot of specific computer settings to work sometimes.
+
+```{r, include = FALSE}
+<<change-font-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(text = element_text(family = "Comic Sans MS"))
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-font, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
-In the exercise below, change all the text to Comic Sans MS font (again), _and_ change the plot's subtitle to appear in **bold** font face.
+```{r change-font-solution}
+plot_datasaurus +
+  theme(text = element_text(family = "Courier New"))
+```
+
+```{r change-font-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, change all the text to Courier New font (again), _and_ change the plot's subtitle to appear in **bold** font face.
+
+```{r, include = FALSE}
+<<change-font-bold-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(text = element_text(family = "Comic Sans MS"),
-        plot.subtitle = element_text(face = "bold"))
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-font-bold, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
+```{r change-font-bold-solution}
+plot_datasaurus +
+  theme(text = element_text(family = "Courier New"),
+        plot.subtitle = element_text(face = "bold"))
+```
+
+```{r change-font-bold-check}
+grade_this_code()
+```
+
 ### Changing text size
 
-In the exercise below, use `rel()` to make the axis tick labels (on both axes) appear 2x as big as its usual "parent" size. (You can refer to the function [docs](https://ggplot2.tidyverse.org/reference/element.html) for `rel()`, but they don't say much, as `rel()` only takes one argument and performs one operation on it.)
+In the exercise below, use `rel()` to make the axis tick labels (on both axes) appear **2x** as big as its usual "parent" size. (You can refer to the function [docs](https://ggplot2.tidyverse.org/reference/element.html) for `rel()`, but they don't say much, as `rel()` only takes one argument and performs one operation on it.)
+
+```{r, include = FALSE}
+<<change-text-size-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(axis.text = element_text(size = rel(2)))
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-text-size, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
-Please note: Text annotations on a plot (as demonstrated earlier in the worksheet) are not included in text theme elements, so if you have text annotations on a plot and want them to appear the same as title and axis text, you will need to set their appearance arguments separately.
+```{r change-text-size-solution}
+plot_datasaurus +
+  theme(axis.text = element_text(size = rel(2)))
+```
+
+```{r change-text-size-check}
+grade_this_code()
+```
+
+Note: Text annotations on a plot (as demonstrated earlier in the worksheet) are not included in text theme elements, so if you have text annotations on a plot and want them to appear the same as title and axis text, you will need to set their appearance arguments separately.
 
 ## Modifying grid line aesthetics
 
@@ -1059,59 +1493,107 @@ In the next set of exercises, we will practice modifying grid line aesthetics us
 
 ### Changing grid line color
 
-In the exercise below, change the color of _all_ grid lines on the plot to "deeppink". Refer  to the [docs](https://ggplot2.tidyverse.org/reference/element.html) for `element_line()` for specific argument names.
+In the exercise below, change the color of _all_ grid lines on the plot to **"deeppink".** Refer  to the [docs](https://ggplot2.tidyverse.org/reference/element.html) for `element_line()` for specific argument names.
+
+```{r, include = FALSE}
+<<change-grid-color-all-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(panel.grid = element_line(color = "deeppink")) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-grid-color-all, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
-In the exercise below, change the color of the major (thicker) grid lines to "deeppink", and the minor (thinner) grid lines to "lightpink".
+```{r change-grid-color-all-solution}
+plot_datasaurus +
+  theme(panel.grid = element_line(color = "deeppink"))
+```
+
+```{r change-grid-color-all-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, change the color of the major (thicker) grid lines to **"deeppink",** and the minor (thinner) grid lines to **"lightpink".**
+
+```{r, include = FALSE}
+<<change-grid-color-sep-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(panel.grid.major = element_line(color = "deeppink"),
-        panel.grid.minor = element_line(color = "lightpink")) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-grid-color-sep, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
+```{r change-grid-color-sep-solution}
+plot_datasaurus +
+  theme(panel.grid.major = element_line(color = "deeppink"),
+        panel.grid.minor = element_line(color = "lightpink"))
+```
+
+```{r change-grid-color-sep-check}
+grade_this_code()
+```
+
 ### Changing grid line type
 
 In the exercise below, make only the minor grid lines dashed.
 
+```{r, include = FALSE}
+<<change-grid-linetype-solution>> 
+```
+
 ```{r}
-plot_datasaurus +
-  theme(panel.grid.minor = element_line(linetype = "dashed")) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-grid-linetype, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
+```{r change-grid-linetype-solution}
+plot_datasaurus +
+  theme(panel.grid.minor = element_line(linetype = "dashed"))
+```
+
+```{r change-grid-linetype-check}
+grade_this_code()
+```
+
 ### Removing grid lines
 
 Next, we'll use a slightly different technique. In the exercise below, use `element_blank()` to _remove_ all grid lines on the plot. (They aren't really relevant because we're plotting a dinosaur anyway.)
 
-`element_blank()` can be assigned to _any_ argument of `theme()` to make that element disappear on the graph.
+```{r, include = FALSE}
+<<rm-grid-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(panel.grid = element_blank()) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r rm-grid, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
+```
+
+<div id="rm-grid-hint">
+`element_blank()` can be assigned to _any_ argument of `theme()` to make that element disappear on the graph.
+</div>
+
+```{r rm-grid-solution}
+plot_datasaurus +
+  theme(panel.grid = element_blank())
+```
+
+```{r rm-grid-check}
+grade_this_code()
 ```
 
 ## Modifying background (rectangle) aesthetics
@@ -1120,46 +1602,85 @@ In this set of exercises, we will practice modifying the background of the plott
 
 ### Changing inner plot background color
 
-In the exercise below, change the background of the plot panel (the square with the data in it, not the background where the title/axis labels are printed) to the fill color "skyblue".
+In the exercise below, change the background of the plot panel (the square with the data in it, not the background where the title/axis labels are printed) to the fill color **"skyblue".**
+
+```{r, include = FALSE}
+<<change-bg-color-panel-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(panel.background = element_rect(fill = "skyblue")) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-bg-color-panel, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
+<div id="change-bg-color-panel-hint">
+If the border color of the plot is changing, but not the internal fill color, remember the difference between the arguments `fill` and `color` for changing colors of shapes with inside areas.
+</div>
+
+```{r change-bg-color-panel-solution}
+plot_datasaurus +
+  theme(panel.background = element_rect(fill = "skyblue"))
+```
+
+```{r change-bg-color-panel-check}
+grade_this_code()
+```
+
 ### Changing full background color
 
-In the exercise below, change the background of the entire plot (the background where the title/axis labels are printed) to the fill color "skyblue".
+In the exercise below, change the background of the entire plot (the background where the title/axis labels are printed) to the fill color **"skyblue".**
+
+```{r, include = FALSE}
+<<change-bg-color-plot-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(plot.background = element_rect(fill = "skyblue")) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-bg-color-plot, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
 ```
 
+```{r change-bg-color-plot-solution}
+plot_datasaurus +
+  theme(plot.background = element_rect(fill = "skyblue"))
+```
+
+```{r change-bg-color-plot-check}
+grade_this_code()
+```
+
 ### Modifying panel border
 
-In the exercise below, change the the border of the panel background (the panel containing the data) to the color "navyblue", and use `rel()` to set the border thickness to 2 times the parent size.
+In the exercise below, change the the border of the panel background (the panel containing the data) to the color "navyblue", and use `rel()` to set the border thickness to **2x** the parent size.
 
-Hint: Yes, panel border is still set using `element_rect()`, because it's the outline of the panel rectangle. Remember the difference between the `fill` and `color` arguments!
+```{r, include = FALSE}
+<<change-plot-border-color-solution>> 
+```
 
 ```{r}
-plot_datasaurus +
-  theme(panel.background = element_rect(color = "navyblue", size = rel(2))) +
-  watermark(60, 50)
+last_plot() + watermark(60, 50)
 ```
 
 ```{r change-plot-border-color, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus
+```
+
+<div id="change-plot-border-color-hint">
+Yes, panel border is still set using `element_rect()`, because it's the outline of the panel rectangle. Remember the difference between the `fill` and `color` arguments!
+</div>
+
+```{r change-plot-border-color-solution}
+plot_datasaurus +
+  theme(panel.background = element_rect(color = "navyblue", size = rel(2)))
+```
+
+```{r change-plot-border-color-check}
+grade_this_code()
 ```
 
 ## Modifying legend aesthetics
@@ -1168,7 +1689,7 @@ In this final set of exercises, we will modify plot legend aesthetics. Legends h
 
 First, we need to add a legend to our Datasaurus, by mapping some other variable to an aesthetic like color, point size, or point transparency. Since color changes just look nice, let's map `dino_x` to point color as well as x-axis position to create the effect of the dino getting lighter from left to right.
 
-```{r make-plot-datasaurus-legend, echo = TRUE}
+```{r make-plot-datasaurus-legend, exercise.setup = "make-plot-datasaurus"}
 plot_datasaurus_legend <- datasauRus::datasaurus_dozen_wide %>% 
   ggplot(aes(x = dino_x, y = dino_y, color = dino_x)) +
   geom_point() +
@@ -1176,6 +1697,10 @@ plot_datasaurus_legend <- datasauRus::datasaurus_dozen_wide %>%
   labs(title = "Rawr!",
        subtitle = "Datasaurus says: always visualize your data.",
        color = "Dino color")
+```
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-datasaurus-legend>>
 ```
 
 ```{r}
@@ -1190,41 +1715,85 @@ Refer to [section 11.6.1](https://ggplot2-book.org/scale-colour.html#legend-layo
 
 [section 18.4.3](https://ggplot2-book.org/polishing.html#legend-elements)
 
+```{r, include = FALSE}
+<<legend-pos-bottom-solution>> 
+```
+
 ```{r}
-plot_datasaurus_legend +
-  theme(legend.position = "bottom")
+last_plot() + watermark(60, 50)
 ```
 
 ```{r legend-pos-bottom, exercise = TRUE, exercise.setup = "make-plot-datasaurus-legend"}
 plot_datasaurus_legend
 ```
 
+```{r legend-pos-bottom-solution}
+plot_datasaurus_legend +
+  theme(legend.position = "bottom")
+```
+
+```{r legend-pos-bottom-check}
+grade_this_code()
+```
+
+###
+
 In the exercise below, remove the legend from the plot (while keeping the color mapping intact).
 
+```{r, include = FALSE}
+<<legend-pos-none-solution>> 
+```
+
 ```{r}
-plot_datasaurus_legend +
-  theme(legend.position = "none")
+last_plot() + watermark(60, 50)
 ```
 
 ```{r legend-pos-none, exercise = TRUE, exercise.setup = "make-plot-datasaurus-legend"}
 plot_datasaurus_legend
 ```
 
+<div id="legend-pos-none-hint">
+This is one of the few theme elements that is removed using a particular argument value, _not_ by setting the argument to `element_blank()`.
+</div>
+
+```{r legend-pos-none-solution}
+plot_datasaurus_legend +
+  theme(legend.position = "none")
+```
+
+```{r legend-pos-none-check}
+grade_this_code()
+```
+
+###
+
 In the exercise below, move the legend inside the plot, to the top right-hand corner. You will need to use two arguments in conjunction to make the legend align properly.
 
 Refer to the examples at the end of section 11.6.1 of the textbook.
 
+```{r, include = FALSE}
+<<legend-pos-topright-solution>> 
+```
+
 ```{r}
-plot_datasaurus_legend +
-  theme(legend.position = c(1, 1),
-        legend.justification = c(1, 1))
+last_plot() + watermark(60, 50)
 ```
 
 ```{r legend-pos-topright, exercise = TRUE, exercise.setup = "make-plot-datasaurus-legend"}
 plot_datasaurus_legend
 ```
 
-As far as I can tell, the argument `legend.position` (when set as a numeric vector with 2 elements between 0 and 1) controls the placement of the center point of the legend box inside the plot panel, while the argument `legend.justification` controls where the box itself is drawn relative to the center point. If you want to explore this behavior further, try adjusting `legend.position` and `legend.justification` separately. For most uses, though, as long as those two arguments are set to the same value, in-panel legend placement should work fine.
+```{r legend-pos-topright-solution}
+plot_datasaurus_legend +
+  theme(legend.position = c(1, 1),
+        legend.justification = c(1, 1))
+```
+
+```{r legend-pos-topright-check}
+grade_this_code()
+```
+
+Note: As far as I can tell, the argument `legend.position` (when set as a numeric vector with 2 elements between 0 and 1) controls the placement of the center point of the legend box inside the plot panel, while the argument `legend.justification` controls where the box itself is drawn relative to the center point. If you want to explore this behavior further, try adjusting `legend.position` and `legend.justification` separately. For most uses, though, as long as those two arguments are set to the same value, in-panel legend placement should work fine.
 
 ### Making the legend box transparent
 
@@ -1232,9 +1801,31 @@ The plot from the last exercise illustrates that the legend box does _not_ have 
 
 In the exercise below, using the same technique from a previous exercise in the grid line aesthetics section, remove the legend background from the plot. (Leave the legend position/justification where it is, though!)
 
+```{r, include = FALSE}
+<<legend-rm-bg-solution>> 
+```
+
 ```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r legend-rm-bg, exercise = TRUE, exercise.setup = "make-plot-datasaurus-legend"}
+plot_datasaurus_legend +
+  theme(legend.position = c(1, 1),
+        legend.justification = c(1, 1))
+```
+
+<div id="legend-rm-bg-hint">
+The legend background is indeed one of the elements that can be removed from a plot with `element_blank()`.
+</div>
+
+```{r legend-rm-bg-solution}
 plot_datasaurus_legend +
   theme(legend.position = c(1, 1),
         legend.justification = c(1, 1),
         legend.background = element_blank())
+```
+
+```{r legend-rm-bg-check}
+grade_this_code()
 ```
