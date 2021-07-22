@@ -38,5 +38,10 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
+# Files generated from knitting and publishing Rmd tutorials
+*.html
+*_files/*
+rsconnect/*
+
 # Other shit
 *.DS_Store
