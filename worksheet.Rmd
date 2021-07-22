@@ -15,7 +15,7 @@ require(tidyverse)
 require(learnr)
 require(gradethis)
 tutorial_options(exercise.eval = TRUE,
-                 exercise.reveal_solution = FALSE,
+                 exercise.reveal_solution = TRUE,
                  exercise.timelimit = 10)
 watermark <- function (x, y) {
   annotate("text",
@@ -32,11 +32,17 @@ watermark <- function (x, y) {
 
 This interactive worksheet will walk you through a series of mini-challenges designed to demonstrate **some of the many aesthetic adjustments you can make to a `ggplot2` graph for readability and pizzazz.**
 
-The exercises below heavily reference the [official ggplot2 textbook](https://ggplot2-book.org/index.html). The textbook is not a cookbook for producing any type of plot, but I recommend it to any R users looking to gain first-principles fluency with ggplot2's design philosophy and how its features are structured.
+After completing this worksheet, learners will be able to:
+
+- Describe many aesthetics that can be modified in `ggplot2` plots
+- search references and function docs to identify techniques for modifying a desired plot aesthetic
+- Modify those plot aesthetics using `ggplot2` code
+
+The exercises below heavily reference the [official ggplot2 textbook](https://ggplot2-book.org/index.html){target="_blank"}. The textbook is not a cookbook for producing any type of plot, but I recommend it to any R users looking to gain first-principles fluency with ggplot2's design philosophy and how its features are structured. You may find it useful to keep the textbook open in another tab while completing the worksheet.
 
 Similarly, this worksheet does not demonstrate *every* possible ggplot aesthetic modification (and you really can adjust nearly every feature of a plot with `ggplot2`!). The worksheet walks through common aesthetic changes I find myself using in my own plots, that I hope will apply to your plotting needs as well.
 
-------------------------------------------------------------------------
+### Worksheet layout
 
 The exercises below assume a general comfort with adjusting `ggplot2` code by adding new layers and changing the arguments specified within existing layers.
 
@@ -78,7 +84,7 @@ The default axis/legend title in `ggplot2` is the name of the variable displayed
 
 To illustrate this, we will look at the `iris` dataset collected by botanist Edgar Anderson (1935), which measures the flower dimensions of several exemplars of 3 iris species.
 
-In the exercise below, use the `labs()` function as demonstrated in [Section 8.1](https://ggplot2-book.org/annotations.html#titles) of the textbook to add the following titles shown below on the solution plot:
+In the exercise below, use the `labs()` function as demonstrated in [Section 8.1](https://ggplot2-book.org/annotations.html#titles){target="_blank"} of the textbook to add the following titles shown below on the solution plot:
 
 -   x-axis: "Iris species"
 -   y-axis: "Petal length (cm)"
@@ -127,7 +133,7 @@ grade_this_code()
 
 Sometimes, in addition to editing axis titles, you will also want to edit the level labels of a discrete variable to improve readability. For example, if you have a binary gender variable coded as "F" and "M" plotted on one axis, you may want to have the plot say "Female" and "Male" instead.
 
-In the exercise below, use the function & argument demonstrated in [section 10.3.2](https://ggplot2-book.org/scale-position.html#scale-labels) of the textbook to change the labels of the iris species to their common names (per Wikipedia) instead of their taxonomic names:
+In the exercise below, use the function & argument demonstrated in [section 10.3.2](https://ggplot2-book.org/scale-position.html#scale-labels){target="_blank"} of the textbook to change the labels of the iris species to their common names (per Wikipedia) instead of their taxonomic names:
 
 -   Iris setosa -\> "Bristle-pointed iris"
 -   Iris virginica -\> "Virginia iris"
@@ -212,7 +218,7 @@ The state names along the x-axis are unreadable because they are written on top 
 
 ### Rotating axis labels
 
-In the exercise below, use one of the functions demonstrated in [section 10.3.3](https://ggplot2-book.org/scale-position.html#guide_axis) of the textbook to rotate the axis labels for the state names by 45 degrees counter-clockwise. (The labels should appear to be right-justified to the axis.) 
+In the exercise below, use one of the functions demonstrated in [section 10.3.3](https://ggplot2-book.org/scale-position.html#guide_axis){target="_blank"} of the textbook to rotate the axis labels for the state names by 45 degrees counter-clockwise. (The labels should appear to be right-justified to the axis.) 
 
 ```{r, include = FALSE}
 <<axis-label-rotate-ccw-solution>> 
@@ -307,7 +313,7 @@ us_states_by_area %>%
   labs(title = "Could be a bit easier to follow...")
 ```
 
-In the exercise below, use the function demonstrated in the [forcats package vignette: Ordering by another variable](https://forcats.tidyverse.org/articles/forcats.html#ordering-by-another-variable-1) to reorder the states along the x-axis by area from smallest to largest.
+In the exercise below, use the function demonstrated in the [forcats package vignette: Ordering by another variable](https://forcats.tidyverse.org/articles/forcats.html#ordering-by-another-variable-1){target="_blank"} to reorder the states along the x-axis by area from smallest to largest.
 
 ```{r, include = FALSE}
 <<fct-reorder-solution>> 
@@ -343,7 +349,7 @@ grade_this_code()
 
 ###
 
-Now, refer to the function's [docs](https://forcats.tidyverse.org/reference/fct_reorder.html) and use another argument to flip the reordering, so the states are ordered from largest to smallest instead.
+Now, refer to the function's [docs](https://forcats.tidyverse.org/reference/fct_reorder.html){target="_blank"} and use another argument to flip the reordering, so the states are ordered from largest to smallest instead.
 
 ```{r, include = FALSE}
 <<fct-reorder-desc-solution>> 
@@ -439,7 +445,7 @@ plot_iris_labeled_commonname
 
 One common axis limit change you might make is to expand limits to include 0. If you have a variable for which 0 carries meaning, it can be helpful to see where 0 is relative to your data.
 
-In the exercise below, use the `ggplot2` function `expand_limits()` to show 0 on the y-axis, feferring to the function [docs](https://ggplot2.tidyverse.org/reference/expand_limits.html) for more info on what arguments to set.
+In the exercise below, use the `ggplot2` function `expand_limits()` to show 0 on the y-axis, feferring to the function [docs](https://ggplot2.tidyverse.org/reference/expand_limits.html){target="_blank"} for more info on what arguments to set.
 
 ```{r, include = FALSE}
 <<expand-limits-solution>> 
@@ -468,7 +474,7 @@ One big benefit of `expand_limits()` is that you don't need to know anything abo
 
 Sometimes, you may want to change your axes to "zoom" your plot to a specific range of values. You may want to zoom in (to stop showing outliers), or to zoom out to meaningful start and end bounds.
 
-In the exercise below, use the "zooming" limit adjustment function (NOT the one that will trim data if they fall outside of the limits!) to change the y-axis bounds to 0 on the lower end and 8 on the higher end, referring to [section 10.1.2](https://ggplot2-book.org/scale-position.html#oob) of the textbook for examples.
+In the exercise below, use the "zooming" limit adjustment function (NOT the one that will trim data if they fall outside of the limits!) to change the y-axis bounds to 0 on the lower end and 8 on the higher end, referring to [section 10.1.2](https://ggplot2-book.org/scale-position.html#oob){target="_blank"} of the textbook for examples.
 
 ```{r, include = FALSE}
 <<coord-cartesian-limits-solution>> 
@@ -519,7 +525,7 @@ plot_starwars_mass
 
 Jabba the Hutt is far and away the heaviest character (all that organized crime pays for a very luxurious diet), which is pushing all of the lighter characters into just a few histogram bins.
 
-To address this, in the exercise below, use one of the convenience functions demonstrated in [section 10.1.9](https://ggplot2-book.org/scale-position.html#scale-transformation) of the textbook to show x-axis tick labels on the log-10 scale.
+To address this, in the exercise below, use one of the convenience functions demonstrated in [section 10.1.9](https://ggplot2-book.org/scale-position.html#scale-transformation){target="_blank"} of the textbook to show x-axis tick labels on the log-10 scale.
 
 ```{r, include = FALSE}
 <<scale-x-log10-solution>> 
@@ -552,7 +558,7 @@ For example, along the y-axis of the histogram of Star Wars' characters' masses,
 
 ### Set axis break width
 
-First, in the exercise below, use `scales::breaks_width()` to set the major breaks to occur on the **10s,** as shown in [section 10.1.5](https://ggplot2-book.org/scale-position.html#break-functions) of the textbook.
+First, in the exercise below, use `scales::breaks_width()` to set the major breaks to occur on the **10s,** as shown in [section 10.1.5](https://ggplot2-book.org/scale-position.html#break-functions){target="_blank"} of the textbook.
 
 ```{r make-plot-starwars-mass-log10, exercise.setup = "make-plot-starwars-mass"}
 plot_starwars_mass_log10 <- plot_starwars_mass +
@@ -615,6 +621,8 @@ grade_this_code()
 
 Next, use `seq()` (NOT a `ggplot2` smart-breaks function!) to create a vector stepping from 0 to 20 in steps of 4 to manually draw the y-axis major breaks at 0, 4, 8 ... 20.
 
+Note: The solution requires you to name all specified arguments of `seq()`.
+
 ```{r, include = FALSE}
 <<breaks-manual-solution>> 
 ```
@@ -636,8 +644,7 @@ You will need to manually assign the vector to the `breaks` argument of `scale_y
 </div>
 
 ```{r breaks-manual-solution}
-plot_starwars_mass +
-  scale_x_log10() +
+plot_starwars_mass_log10 +
   scale_y_continuous(breaks = seq(0, 20, 4))
 ```
 
@@ -655,11 +662,11 @@ For these exercises, we will turn back to the lollipop plot of US states by area
 
 R comes with some built-in alternative color scheme functions for you to apply pre-made color schemes carefully designed to help viewers spot patterns in data.
 
-For discrete (ordered or non-ordered) data, R has palettes from [ColorBrewer](https://colorbrewer2.org/), a palette set designed for plotting discrete colors onto maps.
+For discrete (ordered or non-ordered) data, R has palettes from [ColorBrewer](https://colorbrewer2.org/){target="_blank"}, a palette set designed for plotting discrete colors onto maps.
 
 In the exercise below, modify the base plotting call so that lollipop color (both the line-segment sticks and the point candies) varies with the discrete variable `region` in the data, and set the color scheme to use ColorBrewer with palette "Dark2". (Note that this palette is appropriate for un-ordered categorical variables like the `region` variable here.)
 
-Refer to [section 11.3.1](https://ggplot2-book.org/scale-colour.html#brewer-scales) of the textbook for examples.
+Refer to [section 11.3.1](https://ggplot2-book.org/scale-colour.html#brewer-scales){target="_blank"} of the textbook for examples.
 
 ```{r, include = FALSE}
 <<change-data-color-brewer-solution>> 
@@ -686,10 +693,10 @@ us_states_by_area %>%
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
-  scale_color_brewer(palette = "Dark2") +
   labs(x = "US state",
        y = "area (sq mi)",
-       title = "Alaska is really big")
+       title = "Alaska is really big") +
+  scale_color_brewer(palette = "Dark2")
 ```
 
 ```{r change-data-color-brewer-check}
@@ -698,11 +705,11 @@ grade_this_code()
 
 ###
 
-Next, we will try out another pre-made color scheme, this time for continuous data. The [viridis](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html) color map set was originally made for Python's matplotlib package, but has since been ported to R as well. The viridis color maps were designed to show continuously varying data in an attractive, colorblind-safe, and perceptually uniform way.
+Next, we will try out another pre-made color scheme, this time for continuous data. The [viridis](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html){target="_blank"} color map set was originally made for Python's matplotlib package, but has since been ported to R as well. The viridis color maps were designed to show continuously varying data in an attractive, colorblind-safe, and perceptually uniform way.
 
 In the exercise below, modify the base plotting call so that lollipop color varies with `area` in the data (yes, area is also plotted on other axes, so when done correctly, the lollipops should get lighter from left to right because color will be confounded with x-axis position and lollipop height). Additionally, set the color scheme to use viridis (for continuous data) with palette option "inferno".
 
-Refer to [section 11.2.1](https://ggplot2-book.org/scale-colour.html#particular-palettes) of the textbook for examples.
+Refer to [section 11.2.1](https://ggplot2-book.org/scale-colour.html#particular-palettes){target="_blank"} of the textbook for examples.
 
 ```{r, include = FALSE}
 <<change-data-color-viridis-solution>> 
@@ -733,10 +740,10 @@ us_states_by_area %>%
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
-  scale_color_viridis_c(option = "inferno") +
   labs(x = "US state",
        y = "area (sq mi)",
-       title = "Alaska is really big")
+       title = "Alaska is really big") +
+  scale_color_viridis_c(option = "inferno")
 ```
 
 ```{r change-data-color-viridis-check}
@@ -747,13 +754,13 @@ grade_this_code()
 
 If you want to fully customize your plot colors, you may choose to select your own color scheme. You can do this too! Bear in mind that colors you select may not have the same perceptual properties as pre-made color schemes, but if your colors have some significance (matching the colors of your institution, for example) they should still look nice.
 
-`ggplot2` understands a series of pre-specified named colors, shown [here](http://sape.inf.usi.ch/quick-reference/ggplot2/colour), or hex color codes.
+`ggplot2` understands a series of pre-specified named colors, shown [here](http://sape.inf.usi.ch/quick-reference/ggplot2/colour){target="_blank"}, or hex color codes.
 
 First, you can wholesale change the color of data elements, even when color isn't mapped to a variable. The default color of lines and points on a graph is black, but can be set to any single color you please.
 
 In the exercise below, set the line segments to the constant hex color **"#825324",** and set the points to the constant named color **"forestgreen".** The lollipops should look like very skinny trees.
 
-Refer to [sections 14.4.1 and 14.4.2](https://ggplot2-book.org/layers.html#plots-and-layers) of the textbook for help with this, especially in differentiating where in the functions the color argument should be specified to have the desired behavior.
+Refer to [sections 14.4.1 and 14.4.2](https://ggplot2-book.org/layers.html#plots-and-layers){target="_blank"} of the textbook for help with this, especially in differentiating where in the functions the color argument should be specified to have the desired behavior.
 
 ```{r, include = FALSE}
 <<change-data-color-manual-constant-solution>> 
@@ -798,7 +805,7 @@ Next, we'll go back to customizing the color scales used for differentiating dat
 * North Central (I think this refers to the Midwest actually): "lightpink"
 * West: "skyblue"
 
-Refer to [section 11.3.3](https://ggplot2-book.org/scale-colour.html#manual-scales) of the textbook for examples.
+Refer to [section 11.3.3](https://ggplot2-book.org/scale-colour.html#manual-scales){target="_blank"} of the textbook for examples.
 
 ```{r, include = FALSE}
 <<change-data-color-manual-discrete-solution>> 
@@ -829,13 +836,13 @@ us_states_by_area %>%
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "area (sq mi)",
+       title = "Alaska is really big") +
   scale_color_manual(values = c("Northeast" = "firebrick",
                                 "South" = "navyblue",
                                 "North Central" = "lightpink",
-                                "West" = "skyblue")) +
-  labs(x = "US state",
-       y = "area (sq mi)",
-       title = "Alaska is really big")
+                                "West" = "skyblue"))
 ```
 
 ```{r change-data-color-manual-discrete-check}
@@ -846,7 +853,7 @@ grade_this_code()
 
 In the exercise below, use `scale_color_gradient()` to set `area` to vary with a custom unidirectional color gradient going from **"#000000"** on the low end to **"#ff3dab"** on the high end.
 
-Refer to [section 11.2.2](https://ggplot2-book.org/scale-colour.html#robust-recipes) of the textbook. You may need to scroll down a little bit for examples.
+Refer to [section 11.2.2](https://ggplot2-book.org/scale-colour.html#robust-recipes){target="_blank"} of the textbook. You may need to scroll down a little bit for examples.
 
 ```{r, include = FALSE}
 <<change-data-color-manual-cont-solution>> 
@@ -873,11 +880,10 @@ us_states_by_area %>%
   geom_segment(aes(xend = state, y = 0, yend = area)) +
   geom_point() +
   scale_x_discrete(guide = guide_axis(angle = 45)) +
-  scale_color_gradient(low = "#000000", high = "#ff3dab") +
   labs(x = "US state",
        y = "area (sq mi)",
        title = "Alaska is really big") +
-  watermark(25, 3e5)
+  scale_color_gradient(low = "#000000", high = "#ff3dab")
 ```
 
 ```{r change-data-color-manual-cont-check}
@@ -907,7 +913,7 @@ By setting some arguments in `scale_color_viridis_c()` (or whatever continuous c
 
 In the exercise below, add arguments at the beginning of `scale_color_viridis_c()` to set the color scale min to **0,** the max to **200,000** (a bit smaller than Texas--this will set the biggest 2 states to be "squished" to the max color), and the out-of-bounds behavior to `scales::squish` to actually squish the values, as opposed to graying out the two biggest states. 
 
-Refer to [section 10.1.2](https://ggplot2-book.org/scale-position.html?q=oob#oob) of the textbook for an example, although this section isn't strictly dedicated to handling skewed color scales.
+Refer to [section 10.1.2](https://ggplot2-book.org/scale-position.html?q=oob#oob){target="_blank"} of the textbook for an example, although this section isn't strictly dedicated to handling skewed color scales.
 
 ```{r, include = FALSE}
 <<data-color-squish-solution>> 
@@ -980,7 +986,7 @@ For example, we might like to compare the area of US states to the area of a spe
 
 In this exercise, use `geom_hline()` to place a dashed horizontal reference line across the graph at **57,321 sq mi,** the area of Bangladesh. Set the color of this line to **"springgreen4".**
 
-Refer to [section 8.3](https://ggplot2-book.org/annotations.html#custom-annotations) of the textbook for an example (though the example uses a vertical line instead of a horizontal one, the arguments are very similar), and to the relevant function [docs](https://ggplot2.tidyverse.org/reference/geom_abline.html) for more information on what arguments `geom_hline()` takes.
+Refer to [section 8.3](https://ggplot2-book.org/annotations.html#custom-annotations){target="_blank"} of the textbook for an example (though the example uses a vertical line instead of a horizontal one, the arguments are very similar), and to the relevant function [docs](https://ggplot2.tidyverse.org/reference/geom_abline.html){target="_blank"} for more information on what arguments `geom_hline()` takes.
 
 ```{r, include = FALSE}
 <<hline-solution>> 
@@ -1059,7 +1065,7 @@ For example, we can label the top of each lollipop in our plot of US states by a
 
 In the exercise below, use `geom_text()` to plot `abbrev`, the postal code variable in the US states data, on top of each lollipop point. Note that the x and y locations are already set in the base plot, so the only thing you need to specify in `geom_text()` is which variable the text labels come from.
 
-Refer to some of the examples in the later half of [section 8.2](https://ggplot2-book.org/annotations.html#text-labels) of the textbook to see how `geom_text()` is used.
+Refer to some of the examples in the later half of [section 8.2](https://ggplot2-book.org/annotations.html#text-labels){target="_blank"} of the textbook to see how `geom_text()` is used.
 
 ```{r, include = FALSE}
 <<geom-text-solution>> 
@@ -1088,7 +1094,7 @@ The labels are on the plot now, but they're unreadable because they're right on 
 
 In the exercise below, improve label readability by adding arguments to `geom_text()` to nudge the text labels up on the y-axis by 30,000 (yes, they must be nudged in actual y-axis units) and setting the text size to 2 arbitrary units.
 
-Refer to the function [docs](https://ggplot2.tidyverse.org/reference/geom_text.html) to see what the necessary arguments are called.
+Refer to the function [docs](https://ggplot2.tidyverse.org/reference/geom_text.html){target="_blank"} to see what the necessary arguments are called.
 
 ```{r, include = FALSE}
 <<geom-text-nudge-size-solution>> 
@@ -1120,7 +1126,7 @@ Take the plot we made before with the reference line demarcating the area of Ban
 
 In the exercise below, use `annotate()` to add a `geom_text`-type annotation saying "Area of Bangladesh" with an x-coordinate of **1** (putting it on the far left of the plot) and a y-coordinate of **57,321** (the area of Bangladesh, putting it at the same height as the reference line).
 
-Refer to some of the examples in [section 8.3](https://ggplot2-book.org/annotations.html#custom-annotations) to see how to specify the arguments for a text annotation.
+Refer to some of the examples in [section 8.3](https://ggplot2-book.org/annotations.html#custom-annotations){target="_blank"} to see how to specify the arguments for a text annotation.
 
 ```{r make-plot-us-states-ang-reo-lab-ann, exercise.setup = "make-us-states-by-area"}
 plot_us_states_by_area_angled_reordered_labeled_annot <- us_states_by_area %>% 
@@ -1170,7 +1176,7 @@ We can fix this without changing the x and y-coordinates by changing the horizon
 
 In the exercise below, add arguments to `annotate()` to set the label's horizontal justification to be left-justified, and the vertical justification to be bottom-justified. This makes the text appear to start at the left edge of the reference line and sit on top of it.
 
-Refer to some of the examples in [section 8.2](https://ggplot2-book.org/annotations.html#text-labels) of the textbook, as well as the function docs for `geom_text()`, to identify the correct arguments to set. Note that even though you are calling `annotate()`, the arguments eventually get passed down to `geom_text()` when `ggplot2` draws the annotation, which is why you have to look in the `geom_text()` docs for the function argument info.
+Refer to some of the examples in [section 8.2](https://ggplot2-book.org/annotations.html#text-labels){target="_blank"} of the textbook, as well as the function docs for `geom_text()`, to identify the correct arguments to set. Note that even though you are calling `annotate()`, the arguments eventually get passed down to `geom_text()` when `ggplot2` draws the annotation, which is why you have to look in the `geom_text()` docs for the function argument info.
 
 ```{r, include = FALSE}
 <<annotate-just-solution>> 
@@ -1244,7 +1250,7 @@ Note: `annotate()` is what is used to print the big "EXAMPLE!" stamp on the solu
 
 In this last set of exercises, we'll practice modifying theme elements, or all the "background" non-data pieces, of plots. This allows you to customize the overall look of your plots.
 
-For these exercises, we'll plot one last dataset: the [Datasaurus](https://www.autodesk.com/research/publications/same-stats-different-graphs) dataset. The Datasaurus dataset features a series of points that all have the same descriptive statistics (mean, standard deviation, etc.) but have very different distributions that are apparent upon visualization. The namesake distribution is... a T-rex!
+For these exercises, we'll plot one last dataset: the [Datasaurus](https://www.autodesk.com/research/publications/same-stats-different-graphs){target="_blank"} dataset. The Datasaurus dataset features a series of points that all have the same descriptive statistics (mean, standard deviation, etc.) but have very different distributions that are apparent upon visualization. The namesake distribution is... a T-rex!
 
 ```{r make-plot-datasaurus}
 plot_datasaurus <- datasauRus::datasaurus_dozen_wide %>% 
@@ -1266,7 +1272,7 @@ Since the data on a graph don't strictly influence theme aesthetic decisions, th
 
 First, we'll apply some pre-made plot themes. `ggplot2`'s default white-on-gray theme looks classic, but if you prefer different background-grid-axis designs, you may choose to apply an alternate theme. (Or you might just want to choose a non-default theme for the sake of it. That's fine too!)
 
-Refer to [section 18.2](https://ggplot2-book.org/polishing.html#themes) of the textbook for a list of `ggplot2`'s built-in themes.
+Refer to [section 18.2](https://ggplot2-book.org/polishing.html#themes){target="_blank"} of the textbook for a list of `ggplot2`'s built-in themes.
 
 In the exercise below, add a theme command to render the Datasaurus plot in `ggplot2`'s built-in theme that features a white plot background, gray grid lines, and black borders.
 
@@ -1343,7 +1349,7 @@ grade_this_code()
 
 ## Modifying text aesthetics
 
-From this section to the end, we will be adjusting the appearance of specific theme elements. These exercises will demonstrate changing a selection of theme elements, but will not comprise an exhaustive list of every modifiable theme element. For that, refer to [section 18.4](https://ggplot2-book.org/polishing.html#theme-elements) of the textbook.
+From this section to the end, we will be adjusting the appearance of specific theme elements. These exercises will demonstrate changing a selection of theme elements, but will not comprise an exhaustive list of every modifiable theme element. For that, refer to [section 18.4](https://ggplot2-book.org/polishing.html#theme-elements){target="_blank"} of the textbook.
 
 `ggplot2` provides a series of **element functions** that allow you to customize the appearance of theme elements. There are three families of theme elements: for _text, line, and rectangle._ Each element function takes a series of arguments specific to that type of element. For example, only `element_text()` takes an argument for font family, while only `element_rect()` takes an argument for fill color.
 
@@ -1353,7 +1359,7 @@ In this group of exercises, we will practice customizing text elements using `el
 
 In the exercise below, change the color of _all_ text elements on the plot to **"chartreuse4".**
 
-Refer to [section 18.3](https://ggplot2-book.org/polishing.html#modifying-theme-components) for examples of how to use the various arguments of `theme()` to adjust their respective theme elements, to the [docs](https://ggplot2.tidyverse.org/reference/theme.html) for `theme()` to identify which theme element should be modified, and to the [docs](https://ggplot2.tidyverse.org/reference/element.html) for `element_text()` for specific argument names.
+Refer to [section 18.3](https://ggplot2-book.org/polishing.html#modifying-theme-components){target="_blank"} for examples of how to use the various arguments of `theme()` to adjust their respective theme elements, to the [docs](https://ggplot2.tidyverse.org/reference/theme.html){target="_blank"} for `theme()` to identify which theme element should be modified, and to the [docs](https://ggplot2.tidyverse.org/reference/element.html){target="_blank"} for `element_text()` for specific argument names.
 
 ```{r, include = FALSE}
 <<change-text-color-all-solution>> 
@@ -1462,7 +1468,7 @@ grade_this_code()
 
 ### Changing text size
 
-In the exercise below, use `rel()` to make the axis tick labels (on both axes) appear **2x** as big as its usual "parent" size. (You can refer to the function [docs](https://ggplot2.tidyverse.org/reference/element.html) for `rel()`, but they don't say much, as `rel()` only takes one argument and performs one operation on it.)
+In the exercise below, use `rel()` to make the axis tick labels (on both axes) appear **2x** as big as its usual "parent" size. (You can refer to the function [docs](https://ggplot2.tidyverse.org/reference/element.html){target="_blank"} for `rel()`, but they don't say much, as `rel()` only takes one argument and performs one operation on it.)
 
 ```{r, include = FALSE}
 <<change-text-size-solution>> 
@@ -1493,7 +1499,7 @@ In the next set of exercises, we will practice modifying grid line aesthetics us
 
 ### Changing grid line color
 
-In the exercise below, change the color of _all_ grid lines on the plot to **"deeppink".** Refer  to the [docs](https://ggplot2.tidyverse.org/reference/element.html) for `element_line()` for specific argument names.
+In the exercise below, change the color of _all_ grid lines on the plot to **"deeppink".** Refer  to the [docs](https://ggplot2.tidyverse.org/reference/element.html){target="_blank"} for `element_line()` for specific argument names.
 
 ```{r, include = FALSE}
 <<change-grid-color-all-solution>> 
@@ -1711,9 +1717,9 @@ plot_datasaurus_legend
 
 In the exercise below, move the legend to the bottom of the plot.
 
-Refer to [section 11.6.1](https://ggplot2-book.org/scale-colour.html#legend-layout) for this and the next few exercises on legend positioning.
+Refer to [section 11.6.1](https://ggplot2-book.org/scale-colour.html#legend-layout){target="_blank"} for this and the next few exercises on legend positioning.
 
-[section 18.4.3](https://ggplot2-book.org/polishing.html#legend-elements)
+[section 18.4.3](https://ggplot2-book.org/polishing.html#legend-elements){target="_blank"}
 
 ```{r, include = FALSE}
 <<legend-pos-bottom-solution>> 
