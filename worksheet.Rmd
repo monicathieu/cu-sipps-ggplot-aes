@@ -484,7 +484,7 @@ In the exercise below, use the "zooming" limit adjustment function (NOT the one 
 last_plot() + watermark(2, 3.5)
 ```
 
-```{r coord-cartesian-limits, exercise = TRUE}
+```{r coord-cartesian-limits, exercise = TRUE, exercise.setup = "make-plot-iris-lab-common"}
 plot_iris_labeled_commonname
 ```
 
@@ -582,8 +582,7 @@ plot_starwars_mass_log10
 ```
 
 ```{r breaks-width-solution}
-plot_starwars_mass +
-  scale_x_log10() +
+plot_starwars_mass_log10 +
   scale_y_continuous(breaks = scales::breaks_width(10))
 ```
 
@@ -608,8 +607,7 @@ plot_starwars_mass_log10
 ```
 
 ```{r breaks-n-solution}
-plot_starwars_mass +
-  scale_x_log10() +
+plot_starwars_mass_log10 +
   scale_y_continuous(breaks = scales::breaks_extended(n = 12))
 ```
 
