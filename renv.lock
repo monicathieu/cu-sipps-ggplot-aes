@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.2",
+    "Version": "4.0.3",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -380,10 +380,15 @@
     },
     "htmltools": {
       "Package": "htmltools",
-      "Version": "0.5.1.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "af2c2531e55df5cf230c4b5444fc973c"
+      "Version": "0.5.1.9006",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "rstudio",
+      "RemoteRepo": "htmltools",
+      "RemoteRef": "master",
+      "RemoteSha": "ebcde4d93d75494840a06427beab708179d2d957",
+      "Hash": "afae842eb890a70eb4a8803e39b559b5"
     },
     "htmlwidgets": {
       "Package": "htmlwidgets",
