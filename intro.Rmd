@@ -1,0 +1,53 @@
+---
+output: html_document
+---
+
+## Intro
+
+This interactive worksheet will walk you through a series of mini-challenges designed to demonstrate **some of the many aesthetic adjustments you can make to a `ggplot2` graph for readability and pizzazz.**
+
+After completing this worksheet, learners will be able to:
+
+- Describe many aesthetics that can be modified in `ggplot2` plots
+- search references and function docs to identify techniques for modifying a desired plot aesthetic
+- Modify those plot aesthetics using `ggplot2` code
+
+The exercises below heavily reference the [official ggplot2 textbook](https://ggplot2-book.org/index.html){target="_blank"}. The textbook is not a cookbook for producing any type of plot, but I recommend it to any R users looking to gain first-principles fluency with ggplot2's design philosophy and how its features are structured. You may find it useful to keep the textbook open in another tab while completing the worksheet.
+
+Similarly, this worksheet does not demonstrate *every* possible ggplot aesthetic modification (and you really can adjust nearly every feature of a plot with `ggplot2`!). The worksheet walks through common aesthetic changes I find myself using in my own plots, that I hope will apply to your plotting needs as well.
+
+### Worksheet layout
+
+The exercises below assume a general comfort with adjusting `ggplot2` code by adding new layers and changing the arguments specified within existing layers.
+
+In particular, some exercises will provide a pre-coded base plot stored in a variable, and ask you to to add layers to the plot in that variable.
+
+Other exercises will ask you to adjust the base code for a plot in order to change its appearance. (If you see the full base code written out in an exercise chunk, that's your first hint that you will need to alter the code provided!)
+
+Remember that constructing a whole multi-layered ggplot in one call is roughly equivalent to constructing the base layers of that plot, assigning the plot to a variable, and then adding another element to that variable. So these two chunks should produce identical plots:
+
+```{r, echo = TRUE}
+# Building the whole plot at once
+iris %>% 
+  ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot() + 
+  theme_bw()
+```
+
+```{r, echo = TRUE}
+# Building just the base layers, storing in variable
+plot_iris <- iris %>% 
+  ggplot(aes(x = Species, y = Petal.Length, fill = Species)) +
+  geom_boxplot()
+
+# Calling the base plot via variable, then adding layer(s)
+plot_iris + theme_bw()
+```
+
+In this worksheet, you can assume the following:
+
+-   When a base plot variable is provided in an exercise chunk, you *will not* need to edit the base plot to complete that exercise. You will only need to add new layers
+-   The code that creates base plots will always be displayed in a read-only chunk for your reference
+-   When raw `ggplot2` code is provided in an exercise chunk, you *will* need to edit the base plot to complete that exercise. You may *also* need to add new layers, but not necessarily
+
+Finally, remember that because of `ggplot2`'s modular, layered structure, almost all of the aesthetic changes demonstrated in this worksheet can be mixed and matched with each other in a single plot to customize as much as you would like. These exercises mostly show the adjustments one at a time for simplicity, but you can (and should) combine them in your own plots!

@@ -1,0 +1,910 @@
+---
+title: "ggplot2 aesthetics worksheet"
+subtitle: "Annotations and theme elements"
+author: "Monica Thieu"
+date: "Updated `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  learnr::tutorial:
+    progressive: true
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+source(here::here("setup.R"))
+```
+
+```{r child = "intro.Rmd"}
+```
+
+## Annotating plots
+
+In this section, we'll practice placing annotations on plots. If you want to label a specific feature of your data, or otherwise manually add clarifying information on your plot, here are some techniques.
+
+For these exercises, we'll reuse the plot of US states by area from the [first worksheet](https://monicathieu.shinyapps.io/cu-sipps-ggplot-aes-1/){target="_blank"}. (If you are coming to this worksheet from elsewhere, don't worry! The plot should be mostly self-explanatory.)
+
+```{r make-us-states-by-area}
+us_states_by_area <- tibble(state = datasets::state.name,
+                            abbrev = datasets::state.abb,
+                            area = datasets::state.area,
+                            region = datasets::state.region,
+                            division = datasets::state.division)
+```
+
+```{r make-plot-us-states-ang-reo-lab, exercise.setup = "make-us-states-by-area"}
+plot_us_states_by_area_angled_reordered_labeled <- us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "Area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-us-states-ang-reo-lab>>
+```
+
+```{r}
+plot_us_states_by_area_angled_reordered_labeled
+```
+
+### Drawing reference lines
+
+Often, it's useful to compare data on a plot to a particular reference value. This value can be 0, if it's not obvious on the plot, or some other meaningful number. Drawing a reference line at values of interest allows readers to make quicker visual comparisons.
+
+For example, we might like to compare the area of US states to the area of a specific other country. (The US is so big that many individual states are larger than other sovereign nations in the world.)
+
+In this exercise, use `geom_hline()` to place a dashed horizontal reference line across the graph at **57,321 sq mi,** the area of Bangladesh. Set the color of this line to **"springgreen4".**
+
+Refer to [section 8.3](https://ggplot2-book.org/annotations.html#custom-annotations){target="_blank"} of the textbook for an example (though the example uses a vertical line instead of a horizontal one, the arguments are very similar), and to the relevant function [docs](https://ggplot2.tidyverse.org/reference/geom_abline.html){target="_blank"} for more information on what arguments `geom_hline()` takes.
+
+```{r, include = FALSE}
+<<hline-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r hline, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab"}
+plot_us_states_by_area_angled_reordered_labeled
+```
+
+```{r hline-solution}
+plot_us_states_by_area_angled_reordered_labeled +
+  geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4")
+```
+
+```{r hline-check}
+grade_this_code()
+```
+
+###
+
+Notice how the reference line is drawn on top of the lollipops? This is a direct result of the order in which the plot was constructed. The layers for the lollipop parts (the line segments and the points) were set before the reference line was added, so they are plotted below the reference line. By changing the order in which the layers are added on the plot, we can draw the reference line first, so that the lollipops are drawn on top (and are easier to see).
+
+In the exercise below, alter the order of the layers in the plot construction code to draw the reference line _beneath_ the lollipops (under both the line segments and the points).
+
+```{r, include = FALSE}
+<<hline-beneath-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r hline-beneath, exercise = TRUE, exercise.setup = "make-us-states-by-area"}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "Area (sq mi)",
+       title = "Alaska is really big") +
+  geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4")
+```
+
+```{r hline-beneath-solution}
+us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4") +
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "Area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r hline-beneath-check}
+grade_this_code()
+```
+
+(For other types of reference lines, `geom_vline()` draws vertical lines, and `geom_abline()` draws diagonal lines of any slope, but we won't use those in this worksheet.)
+
+### Adding text labels
+
+It can also be useful to add text annotations in particular locations on top of plots. These can be used to label data points and/or particular regions of a plot.
+
+Text labels can be added in two general ways.
+
+First, text labels that each correspond to an x-axis and y-axis location can be plotted like data. This allows points on a point plot to be individually labeled.
+
+For example, we can label the top of each lollipop in our plot of US states by area with the two-letter postal code abbreviation of that state. It will be redundant with the full state names on the x-axis, but that's fine for this exercise.
+
+In the exercise below, use `geom_text()` to plot `abbrev`, the postal code variable in the US states data, on top of each lollipop point. Note that the x and y locations are already set in the base plot, so the only thing you need to specify in `geom_text()` is which variable the text labels come from.
+
+Refer to some of the examples in the later half of [section 8.2](https://ggplot2-book.org/annotations.html#text-labels){target="_blank"} of the textbook to see how `geom_text()` is used.
+
+```{r, include = FALSE}
+<<geom-text-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r geom-text, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab"}
+plot_us_states_by_area_angled_reordered_labeled
+```
+
+```{r geom-text-solution}
+plot_us_states_by_area_angled_reordered_labeled +
+  geom_text(aes(label = abbrev))
+```
+
+```{r geom-text-check}
+grade_this_code()
+```
+
+###
+
+The labels are on the plot now, but they're unreadable because they're right on top of the lollipop points, and because they're overplotting a bit on one another because of their size.
+
+In the exercise below, improve label readability by adding arguments to `geom_text()` to nudge the text labels up on the y-axis by 30,000 (yes, they must be nudged in actual y-axis units) and setting the text size to 2 arbitrary units.
+
+Refer to the function [docs](https://ggplot2.tidyverse.org/reference/geom_text.html){target="_blank"} to see what the necessary arguments are called.
+
+```{r, include = FALSE}
+<<geom-text-nudge-size-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r geom-text-nudge-size, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab"}
+plot_us_states_by_area_angled_reordered_labeled +
+  geom_text(aes(label = abbrev))
+```
+
+```{r geom-text-nudge-size-solution}
+plot_us_states_by_area_angled_reordered_labeled +
+  geom_text(aes(label = abbrev), nudge_y = 30000, size = 2)
+```
+
+```{r geom-text-nudge-size-check}
+grade_this_code()
+```
+
+###
+
+The other method of adding text annotations is to add one-off annotations by manually specifying what you want the label to say and where you want it to appear on the plot. We will use the function `annotate()` for one-off annotations. Instead of drawing x and y locations from the base plot, `annotate()` expects manual x-y pairs.
+
+Take the plot we made before with the reference line demarcating the area of Bangladesh. We can add a single text annotation next to the reference line labeling what it refers to.
+
+In the exercise below, use `annotate()` to add a `geom_text`-type annotation saying "Area of Bangladesh" with an x-coordinate of **1** (putting it on the far left of the plot) and a y-coordinate of **57,321** (the area of Bangladesh, putting it at the same height as the reference line).
+
+Refer to some of the examples in [section 8.3](https://ggplot2-book.org/annotations.html#custom-annotations){target="_blank"} to see how to specify the arguments for a text annotation.
+
+```{r make-plot-us-states-ang-reo-lab-ann, exercise.setup = "make-us-states-by-area"}
+plot_us_states_by_area_angled_reordered_labeled_annot <- us_states_by_area %>% 
+  ggplot(aes(x = fct_reorder(state, area), y = area)) + 
+  geom_hline(yintercept = 57321, linetype = "dashed", color = "springgreen4") +
+  geom_segment(aes(xend = state, y = 0, yend = area)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 45)) +
+  labs(x = "US state",
+       y = "Area (sq mi)",
+       title = "Alaska is really big")
+```
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-us-states-ang-reo-lab-ann>>
+```
+
+```{r, include = FALSE}
+<<annotate-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r annotate, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab-ann"}
+plot_us_states_by_area_angled_reordered_labeled_annot
+```
+
+```{r annotate-solution}
+plot_us_states_by_area_angled_reordered_labeled_annot +
+  annotate("text",
+           x = 1,
+           y = 57321,
+           label = "Area of Bangladesh")
+```
+
+```{r annotate-check}
+grade_this_code()
+```
+
+###
+
+The annotation appears on the plot, but it looks like the center of the text is justified to (1, 57321), causing the line to go through the text, and half of the text to spill off the plot.
+
+We can fix this without changing the x and y-coordinates by changing the horizontal and vertical justification of the annotation relative to its coordinates.
+
+In the exercise below, add arguments to `annotate()` to set the label's horizontal justification to be left-justified, and the vertical justification to be bottom-justified. This makes the text appear to start at the left edge of the reference line and sit on top of it.
+
+Refer to some of the examples in [section 8.2](https://ggplot2-book.org/annotations.html#text-labels){target="_blank"} of the textbook, as well as the function docs for `geom_text()`, to identify the correct arguments to set. Note that even though you are calling `annotate()`, the arguments eventually get passed down to `geom_text()` when `ggplot2` draws the annotation, which is why you have to look in the `geom_text()` docs for the function argument info.
+
+```{r, include = FALSE}
+<<annotate-just-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r annotate-just, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab-ann"}
+plot_us_states_by_area_angled_reordered_labeled_annot +
+  annotate(geom = "text",
+           x = 1,
+           y = 57321,
+           label = "Area of Bangladesh")
+```
+
+```{r annotate-just-solution}
+plot_us_states_by_area_angled_reordered_labeled_annot +
+  annotate(geom = "text",
+           x = 1,
+           y = 57321,
+           hjust = "left",
+           vjust = "bottom",
+           label = "Area of Bangladesh")
+```
+
+```{r annotate-just-check}
+grade_this_code()
+```
+
+###
+
+Finally, in the exercise below, change the geom being called by `annotate()` from `geom_text()` to `geom_label()`, which is an alternate way of drawing text on plots, but with an opaque background. `geom_label()` is an attractive alternative to `geom_text()` when the plot behind the text is very noisy.
+
+```{r, include = FALSE}
+<<annotate-label-solution>> 
+```
+
+```{r}
+last_plot() + watermark(25, 3e5)
+```
+
+```{r annotate-label, exercise = TRUE, exercise.setup = "make-plot-us-states-ang-reo-lab-ann"}
+plot_us_states_by_area_angled_reordered_labeled_annot +
+  annotate(geom = "text",
+           x = 1,
+           y = 57321,
+           hjust = "left",
+           vjust = "bottom",
+           label = "Area of Bangladesh")
+```
+
+```{r annotate-label-solution}
+plot_us_states_by_area_angled_reordered_labeled_annot +
+  annotate(geom = "label",
+           x = 1,
+           y = 57321,
+           hjust = "left",
+           vjust = "bottom",
+           label = "Area of Bangladesh")
+```
+
+```{r annotate-label-check}
+grade_this_code()
+```
+
+Note: `annotate()` is what is used to print the big "EXAMPLE!" stamp on the solution plots in this worksheet!
+
+## Changing overarching theme
+
+In this set of exercises, we'll practice modifying theme elements, or all the "background" non-data pieces, of plots. This allows you to customize the overall look of your plots.
+
+For these exercises, we'll plot from the [Datasaurus](https://www.autodesk.com/research/publications/same-stats-different-graphs){target="_blank"} dataset. The Datasaurus dataset features a series of points that all have the same descriptive statistics (mean, standard deviation, etc.) but have very different distributions that are apparent upon visualization. The namesake distribution is... a T-rex!
+
+```{r make-plot-datasaurus}
+plot_datasaurus <- datasauRus::datasaurus_dozen_wide %>% 
+  ggplot(aes(x = dino_x, y = dino_y)) +
+  geom_point() +
+  labs(title = "Rawr!",
+       subtitle = "Datasaurus says: always visualize your data.")
+```
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-datasaurus>>
+```
+
+```{r}
+plot_datasaurus
+```
+
+Since the data on a graph don't strictly influence theme aesthetic decisions, this will be a fun plot to customize without worrying what the data mean.
+
+First, we'll apply some pre-made plot themes. `ggplot2`'s default white-on-gray theme looks classic, but if you prefer different background-grid-axis designs, you may choose to apply an alternate theme. (Or you might just want to choose a non-default theme for the sake of it. That's fine too!)
+
+Refer to [section 18.2](https://ggplot2-book.org/polishing.html#themes){target="_blank"} of the textbook for a list of `ggplot2`'s built-in themes.
+
+In the exercise below, add a theme command to render the Datasaurus plot in `ggplot2`'s built-in theme that features a white plot background, gray grid lines, and black borders.
+
+```{r, include = FALSE}
+<<theme-bw-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r theme-bw, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r theme-bw-solution}
+plot_datasaurus +
+  theme_bw()
+```
+
+```{r theme-bw-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, add a theme command to render this plot in `ggplot2`'s "minimal" theme.
+
+```{r, include = FALSE}
+<<theme-minimal-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r theme-minimal, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r theme-minimal-solution}
+plot_datasaurus +
+  theme_minimal()
+```
+
+```{r theme-minimal-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, add a theme command to render this plot in `ggplot2`'s "classic" theme (designed to look like base R's default plots).
+
+```{r, include = FALSE}
+<<theme-classic-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r theme-classic, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r theme-classic-solution}
+plot_datasaurus +
+  theme_classic()
+```
+
+```{r theme-classic-check}
+grade_this_code()
+```
+
+## Modifying text aesthetics
+
+From this section to the end, we will be adjusting the appearance of specific theme elements. These exercises will demonstrate changing a selection of theme elements, but will not comprise an exhaustive list of every modifiable theme element. For that, refer to [section 18.4](https://ggplot2-book.org/polishing.html#theme-elements){target="_blank"} of the textbook.
+
+`ggplot2` provides a series of **element functions** that allow you to customize the appearance of theme elements. There are three families of theme elements: for _text, line, and rectangle._ Each element function takes a series of arguments specific to that type of element. For example, only `element_text()` takes an argument for font family, while only `element_rect()` takes an argument for fill color.
+
+In this group of exercises, we will practice customizing text elements using `element_text()`.
+
+### Changing text color
+
+In the exercise below, change the color of _all_ text elements on the plot to **"chartreuse4".**
+
+Refer to [section 18.3](https://ggplot2-book.org/polishing.html#modifying-theme-components){target="_blank"} for examples of how to use the various arguments of `theme()` to adjust their respective theme elements, to the [docs](https://ggplot2.tidyverse.org/reference/theme.html){target="_blank"} for `theme()` to identify which theme element should be modified, and to the [docs](https://ggplot2.tidyverse.org/reference/element.html){target="_blank"} for `element_text()` for specific argument names.
+
+```{r, include = FALSE}
+<<change-text-color-all-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-text-color-all, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+<div id="change-text-color-all-hint">
+There is a single `theme()` argument that will modify every single text element in the graph.
+</div>
+
+```{r change-text-color-all-solution}
+plot_datasaurus +
+  theme(text = element_text(color = "chartreuse4"))
+```
+
+```{r change-text-color-all-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, change the color of *just* the plot title to **"chartreuse4".**
+
+Refer to the docs for `theme()` again to find the correct theme element argument to modify.
+
+```{r, include = FALSE}
+<<change-text-color-title-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-text-color-title, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r change-text-color-title-solution}
+plot_datasaurus +
+  theme(plot.title = element_text(color = "chartreuse4"))
+```
+
+```{r change-text-color-title-check}
+grade_this_code()
+```
+
+### Changing fonts
+
+In the exercise below, change all the text on the plot to use the font **Courier New.**
+
+WARNING: If this technique fails to change the font in a plot on your own machine, that's okay! You can either try the name of another font you know exists on your computer, or if that still doesn't work, don't worry about it. While I've tried to show the lightest-weight method here, R plot fonts can get very dicey, and rely on a lot of specific computer settings to work sometimes.
+
+```{r, include = FALSE}
+<<change-font-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-font, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r change-font-solution}
+plot_datasaurus +
+  theme(text = element_text(family = "Courier New"))
+```
+
+```{r change-font-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, change all the text to Courier New font (again), _and_ change the plot's subtitle to appear in **bold** font face.
+
+```{r, include = FALSE}
+<<change-font-bold-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-font-bold, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r change-font-bold-solution}
+plot_datasaurus +
+  theme(text = element_text(family = "Courier New"),
+        plot.subtitle = element_text(face = "bold"))
+```
+
+```{r change-font-bold-check}
+grade_this_code()
+```
+
+### Changing text size
+
+In the exercise below, use `rel()` to make the axis tick labels (on both axes) appear **2x** as big as its usual "parent" size. (You can refer to the function [docs](https://ggplot2.tidyverse.org/reference/element.html){target="_blank"} for `rel()`, but they don't say much, as `rel()` only takes one argument and performs one operation on it.)
+
+```{r, include = FALSE}
+<<change-text-size-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-text-size, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r change-text-size-solution}
+plot_datasaurus +
+  theme(axis.text = element_text(size = rel(2)))
+```
+
+```{r change-text-size-check}
+grade_this_code()
+```
+
+Note: Text annotations on a plot (as demonstrated earlier in the worksheet) are not included in text theme elements, so if you have text annotations on a plot and want them to appear the same as title and axis text, you will need to set their appearance arguments separately.
+
+## Modifying grid line aesthetics
+
+In the next set of exercises, we will practice modifying grid line aesthetics using `element_line()`.
+
+### Changing grid line color
+
+In the exercise below, change the color of _all_ grid lines on the plot to **"deeppink".** Refer  to the [docs](https://ggplot2.tidyverse.org/reference/element.html){target="_blank"} for `element_line()` for specific argument names.
+
+```{r, include = FALSE}
+<<change-grid-color-all-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-grid-color-all, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r change-grid-color-all-solution}
+plot_datasaurus +
+  theme(panel.grid = element_line(color = "deeppink"))
+```
+
+```{r change-grid-color-all-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, change the color of the major (thicker) grid lines to **"deeppink",** and the minor (thinner) grid lines to **"lightpink".**
+
+```{r, include = FALSE}
+<<change-grid-color-sep-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-grid-color-sep, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r change-grid-color-sep-solution}
+plot_datasaurus +
+  theme(panel.grid.major = element_line(color = "deeppink"),
+        panel.grid.minor = element_line(color = "lightpink"))
+```
+
+```{r change-grid-color-sep-check}
+grade_this_code()
+```
+
+### Changing grid line type
+
+In the exercise below, make only the minor grid lines dashed.
+
+```{r, include = FALSE}
+<<change-grid-linetype-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-grid-linetype, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r change-grid-linetype-solution}
+plot_datasaurus +
+  theme(panel.grid.minor = element_line(linetype = "dashed"))
+```
+
+```{r change-grid-linetype-check}
+grade_this_code()
+```
+
+### Removing grid lines
+
+Next, we'll use a slightly different technique. In the exercise below, use `element_blank()` to _remove_ all grid lines on the plot. (They aren't really relevant because we're plotting a dinosaur anyway.)
+
+```{r, include = FALSE}
+<<rm-grid-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r rm-grid, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+<div id="rm-grid-hint">
+`element_blank()` can be assigned to _any_ argument of `theme()` to make that element disappear on the graph.
+</div>
+
+```{r rm-grid-solution}
+plot_datasaurus +
+  theme(panel.grid = element_blank())
+```
+
+```{r rm-grid-check}
+grade_this_code()
+```
+
+## Modifying background (rectangle) aesthetics
+
+In this set of exercises, we will practice modifying the background of the plotting panel (the rectangle in which the data live) and the background of the entire plot (where the title, legend, and axis labels live). These elements are rectangles, governed by `element_rect()`.
+
+### Changing inner plot background color
+
+In the exercise below, change the background of the plot panel (the square with the data in it, not the background where the title/axis labels are printed) to the fill color **"skyblue".**
+
+```{r, include = FALSE}
+<<change-bg-color-panel-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-bg-color-panel, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+<div id="change-bg-color-panel-hint">
+If the border color of the plot is changing, but not the internal fill color, remember the difference between the arguments `fill` and `color` for changing colors of shapes with inside areas.
+</div>
+
+```{r change-bg-color-panel-solution}
+plot_datasaurus +
+  theme(panel.background = element_rect(fill = "skyblue"))
+```
+
+```{r change-bg-color-panel-check}
+grade_this_code()
+```
+
+### Changing full background color
+
+In the exercise below, change the background of the entire plot (the background where the title/axis labels are printed) to the fill color **"skyblue".**
+
+```{r, include = FALSE}
+<<change-bg-color-plot-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-bg-color-plot, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+```{r change-bg-color-plot-solution}
+plot_datasaurus +
+  theme(plot.background = element_rect(fill = "skyblue"))
+```
+
+```{r change-bg-color-plot-check}
+grade_this_code()
+```
+
+### Modifying panel border
+
+In the exercise below, change the the border of the panel background (the panel containing the data) to the color "navyblue", and use `rel()` to set the border thickness to **2x** the parent size.
+
+```{r, include = FALSE}
+<<change-plot-border-color-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r change-plot-border-color, exercise = TRUE, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus
+```
+
+<div id="change-plot-border-color-hint">
+Yes, panel border is still set using `element_rect()`, because it's the outline of the panel rectangle. Remember the difference between the `fill` and `color` arguments!
+</div>
+
+```{r change-plot-border-color-solution}
+plot_datasaurus +
+  theme(panel.background = element_rect(color = "navyblue", size = rel(2)))
+```
+
+```{r change-plot-border-color-check}
+grade_this_code()
+```
+
+## Modifying legend aesthetics
+
+In this final set of exercises, we will modify plot legend aesthetics. Legends have some special `theme()` arguments allowing them to be moved around the plot, and the background of the legend box can also be customized using `element_rect()`.
+
+First, we need to add a legend to our Datasaurus, by mapping some other variable to an aesthetic like color, point size, or point transparency. Since color changes just look nice, let's map `dino_x` to point color as well as x-axis position to create the effect of the dino getting lighter from left to right.
+
+```{r make-plot-datasaurus-legend, exercise.setup = "make-plot-datasaurus"}
+plot_datasaurus_legend <- datasauRus::datasaurus_dozen_wide %>% 
+  ggplot(aes(x = dino_x, y = dino_y, color = dino_x)) +
+  geom_point() +
+  scale_color_viridis_c() +
+  labs(title = "Rawr!",
+       subtitle = "Datasaurus says: always visualize your data.",
+       color = "Dino color")
+```
+
+```{r, echo = TRUE, eval = FALSE}
+<<make-plot-datasaurus-legend>>
+```
+
+```{r}
+plot_datasaurus_legend
+```
+
+### Moving the legend
+
+In the exercise below, move the legend to the bottom of the plot.
+
+Refer to [section 11.6.1](https://ggplot2-book.org/scale-colour.html#legend-layout){target="_blank"} for this and the next few exercises on legend positioning.
+
+[section 18.4.3](https://ggplot2-book.org/polishing.html#legend-elements){target="_blank"}
+
+```{r, include = FALSE}
+<<legend-pos-bottom-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r legend-pos-bottom, exercise = TRUE, exercise.setup = "make-plot-datasaurus-legend"}
+plot_datasaurus_legend
+```
+
+```{r legend-pos-bottom-solution}
+plot_datasaurus_legend +
+  theme(legend.position = "bottom")
+```
+
+```{r legend-pos-bottom-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, remove the legend from the plot (while keeping the color mapping intact).
+
+```{r, include = FALSE}
+<<legend-pos-none-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r legend-pos-none, exercise = TRUE, exercise.setup = "make-plot-datasaurus-legend"}
+plot_datasaurus_legend
+```
+
+<div id="legend-pos-none-hint">
+This is one of the few theme elements that is removed using a particular argument value, _not_ by setting the argument to `element_blank()`.
+</div>
+
+```{r legend-pos-none-solution}
+plot_datasaurus_legend +
+  theme(legend.position = "none")
+```
+
+```{r legend-pos-none-check}
+grade_this_code()
+```
+
+###
+
+In the exercise below, move the legend inside the plot, to the top right-hand corner. You will need to use two arguments in conjunction to make the legend align properly.
+
+Refer to the examples at the end of section 11.6.1 of the textbook.
+
+```{r, include = FALSE}
+<<legend-pos-topright-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r legend-pos-topright, exercise = TRUE, exercise.setup = "make-plot-datasaurus-legend"}
+plot_datasaurus_legend
+```
+
+```{r legend-pos-topright-solution}
+plot_datasaurus_legend +
+  theme(legend.position = c(1, 1),
+        legend.justification = c(1, 1))
+```
+
+```{r legend-pos-topright-check}
+grade_this_code()
+```
+
+Note: As far as I can tell, the argument `legend.position` (when set as a numeric vector with 2 elements between 0 and 1) controls the placement of the center point of the legend box inside the plot panel, while the argument `legend.justification` controls where the box itself is drawn relative to the center point. If you want to explore this behavior further, try adjusting `legend.position` and `legend.justification` separately. For most uses, though, as long as those two arguments are set to the same value, in-panel legend placement should work fine.
+
+### Making the legend box transparent
+
+The plot from the last exercise illustrates that the legend box does _not_ have a transparent background, but instead the legend background is the same color as the plot background by default. In cases where the legend is plotted over something else, or the background is otherwise not the default color, it's usually easiest to improve plot appearance by removing the legend background to show the plot beneath.
+
+In the exercise below, using the same technique from a previous exercise in the grid line aesthetics section, remove the legend background from the plot. (Leave the legend position/justification where it is, though!)
+
+```{r, include = FALSE}
+<<legend-rm-bg-solution>> 
+```
+
+```{r}
+last_plot() + watermark(60, 50)
+```
+
+```{r legend-rm-bg, exercise = TRUE, exercise.setup = "make-plot-datasaurus-legend"}
+plot_datasaurus_legend +
+  theme(legend.position = c(1, 1),
+        legend.justification = c(1, 1))
+```
+
+<div id="legend-rm-bg-hint">
+The legend background is indeed one of the elements that can be removed from a plot with `element_blank()`.
+</div>
+
+```{r legend-rm-bg-solution}
+plot_datasaurus_legend +
+  theme(legend.position = c(1, 1),
+        legend.justification = c(1, 1),
+        legend.background = element_blank())
+```
+
+```{r legend-rm-bg-check}
+grade_this_code()
+```
+
+
