@@ -2,7 +2,7 @@
 output: html_document
 ---
 
-## Intro
+## Intro {data-progressive=FALSE}
 
 This interactive worksheet will walk you through a series of mini-challenges designed to demonstrate **some of the many aesthetic adjustments you can make to a `ggplot2` graph for readability and pizzazz.**
 
