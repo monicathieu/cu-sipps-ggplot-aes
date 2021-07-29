@@ -1,6 +1,6 @@
 ---
 title: "ggplot2 aesthetics worksheet"
-subtitle: "Axes and labeling"
+subtitle: "Axes, labeling, and color mapping"
 author: "Monica Thieu"
 date: "Updated `r format(Sys.time(), '%B %d, %Y')`"
 output: 
@@ -15,6 +15,15 @@ source(here::here("setup.R"))
 
 
 ```{r child = "intro.Rmd"}
+```
+
+### The current worksheet
+
+This worksheet generally covers **axis adjustments and color mapping.** The majority of the exercises demonstrate ways to re-label, re-order, and re-scale discrete and continuous axes, while the last section shows different ways to adjust how a color scheme is mapped to a data variable.
+
+For more ggplot2 aesthetics practice, check out [the second worksheet, covering plot annotations and theme elements](https://monicathieu.shinyapps.io/cu-sipps-ggplot-aes-2/){target="_blank"}.
+
+```{r child = "submit_issues.Rmd"}
 ```
 
 ## Modifying titles of plot elements

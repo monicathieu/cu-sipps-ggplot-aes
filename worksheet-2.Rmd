@@ -16,6 +16,15 @@ source(here::here("setup.R"))
 ```{r child = "intro.Rmd"}
 ```
 
+### The current worksheet
+
+This worksheet generally covers **plot annotations and theme elements.** The exercises demonstrate various non-data adjustments you can make to improve a plot's attractiveness and intelligibility, from applying annotations to clarify your data to adjusting plot style with the many arguments of `theme()`.
+
+For more ggplot2 aesthetics practice, check out [the first worksheet, covering axis adjustments and color mapping](https://monicathieu.shinyapps.io/cu-sipps-ggplot-aes-2/){target="_blank"}.
+
+```{r child = "submit_issues.Rmd"}
+```
+
 ## Annotating plots
 
 In this section, we'll practice placing annotations on plots. If you want to label a specific feature of your data, or otherwise manually add clarifying information on your plot, here are some techniques.
@@ -790,8 +799,6 @@ In the exercise below, move the legend to the bottom of the plot.
 
 Refer to [section 11.6.1](https://ggplot2-book.org/scale-colour.html#legend-layout){target="_blank"} for this and the next few exercises on legend positioning.
 
-[section 18.4.3](https://ggplot2-book.org/polishing.html#legend-elements){target="_blank"}
-
 ```{r, include = FALSE}
 <<legend-pos-bottom-solution>> 
 ```
@@ -876,7 +883,7 @@ Note: As far as I can tell, the argument `legend.position` (when set as a numeri
 
 The plot from the last exercise illustrates that the legend box does _not_ have a transparent background, but instead the legend background is the same color as the plot background by default. In cases where the legend is plotted over something else, or the background is otherwise not the default color, it's usually easiest to improve plot appearance by removing the legend background to show the plot beneath.
 
-In the exercise below, using the same technique from a previous exercise in the grid line aesthetics section, remove the legend background from the plot. (Leave the legend position/justification where it is, though!)
+In the exercise below, using the same technique from a previous exercise in the grid line aesthetics section, remove the legend background from the plot. (Leave the legend position/justification where it is, though!) Refer to [section 18.4.3](https://ggplot2-book.org/polishing.html#legend-elements){target="_blank"} of the textbook for which `theme()` argument controls the legend box background.
 
 ```{r, include = FALSE}
 <<legend-rm-bg-solution>> 

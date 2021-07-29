@@ -1,0 +1,7 @@
+---
+output: html_document
+---
+
+### Bug reporting and exercise suggestions
+
+If you encounter a bug (incorrect solution, default exercise chunk doesn't run, etc.) or would like to suggest plot features for additional exercises, please [submit an issue](https://github.com/monicathieu/cu-sipps-ggplot-aes/issues){target="_blank"} on the GitHub repo for these worksheets.
